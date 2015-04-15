@@ -1,10 +1,10 @@
-package Chat;
+package trojanow.chat;
 
-import Interfaces.Invokable;
-import UserManager.User;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import trojanow.interfaces.Invokable;
+import trojanow.usermanager.User;
 
 /**
  * PURPOSE:
@@ -17,14 +17,14 @@ import android.os.Bundle;
  * see chat messages and write chat messages.
  *
  * This class will contain a BroadcastReceiver which will register to the LocalBroadcastManager
- * to receive chat messages from other users. Chat messages from the current user will be distributed
+ * to receive chat messages from other users. com.usc.trojanow.Chat messages from the current user will be distributed
  * by the LocalBroadcastManager to other components.
  *
  * Since all chat communication goes through the server, the NetworkManager will be responsible
  * for passing messages to the server and distributing the messages coming from the server.
  *
  * ARCHITECTURAL MAPPING:
- * The Chat class maps directly to the Chat Client component in the architectural diagram and the
+ * The com.usc.trojanow.Chat class maps directly to the com.usc.trojanow.Chat Client component in the architectural diagram and the
  * ChatClient class in the class diagram.
  *
  * Created by Eirik Skogstad.
@@ -49,6 +49,7 @@ public class Chat extends Activity implements Invokable {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
     }
 
     /**

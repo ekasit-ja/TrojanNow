@@ -1,8 +1,8 @@
-package UserManager;
+package trojanow.usermanager;
 
-import Interfaces.Invokable;
 import android.app.Activity;
 import android.content.Intent;
+import trojanow.interfaces.Invokable;
 
 /**
  * PURPOSE:

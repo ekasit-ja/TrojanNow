@@ -1,4 +1,4 @@
-package PostManager;
+package trojanow.postmanager;
 
 /**
  * PURPOSE:

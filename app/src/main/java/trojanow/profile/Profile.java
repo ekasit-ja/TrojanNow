@@ -1,4 +1,4 @@
-package Profile;
+package trojanow.profile;
 
 /**
  * PURPOSE:

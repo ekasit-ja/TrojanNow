@@ -1,8 +1,8 @@
-package Profile;
+package trojanow.profile;
 
-import Interfaces.Invokable;
 import android.app.Activity;
 import android.content.Intent;
+import trojanow.interfaces.Invokable;
 
 /**
  * PURPOSE:

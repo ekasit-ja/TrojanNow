@@ -1,6 +1,6 @@
-package GroupManager;
+package trojanow.groupmanager;
 
-import Interfaces.Invokable;
+import trojanow.interfaces.Invokable;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

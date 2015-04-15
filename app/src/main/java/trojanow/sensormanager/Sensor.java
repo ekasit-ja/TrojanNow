@@ -1,4 +1,4 @@
-package SensorManager;
+package trojanow.sensormanager;
 
 /**
  * PURPOSE:

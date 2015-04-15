@@ -1,6 +1,6 @@
-package PostManager;
+package trojanow.postmanager;
 
-import Interfaces.Invokable;
+import trojanow.interfaces.Invokable;
 import android.app.Activity;
 import android.content.Intent;
 

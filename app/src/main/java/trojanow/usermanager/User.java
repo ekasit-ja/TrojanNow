@@ -1,6 +1,6 @@
-package UserManager;
+package trojanow.usermanager;
 
-import GroupManager.Group;
+import trojanow.groupmanager.Group;
 
 import java.util.Collection;
 

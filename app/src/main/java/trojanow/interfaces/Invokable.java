@@ -1,4 +1,4 @@
-package Interfaces;
+package trojanow.interfaces;
 
 import android.content.Intent;
 

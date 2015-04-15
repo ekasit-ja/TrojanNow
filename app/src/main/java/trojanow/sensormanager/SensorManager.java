@@ -1,8 +1,8 @@
-package SensorManager;
+package trojanow.sensormanager;
 
-import Interfaces.Invokable;
 import android.app.IntentService;
 import android.content.Intent;
+import trojanow.interfaces.Invokable;
 
 /**
  * PURPOSE:
