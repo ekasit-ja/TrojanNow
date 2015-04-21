@@ -5,12 +5,18 @@ import android.content.Intent;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.format.DateUtils;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import usc.cs578.com.trojannow.R;
 
@@ -18,6 +24,7 @@ import usc.cs578.com.trojannow.R;
  * Created by Ekasit_Ja on 14-Apr-15.
  */
 public class PostViewerAdapter extends BaseAdapter {
+    private static final String TAG = "PostViewerAdapter";
     private static final int READ_MORE_OFFSET = 11;
     private static final int PAINT_OFFSET = 9;
     private static final String READ_MORE_SUFFIX = "… read more";
@@ -114,7 +121,20 @@ public class PostViewerAdapter extends BaseAdapter {
             }
         });
 
-        holder.post_timestamp.setText(posts[position].postTimestamp);
+        // calculate elapsed time to show pretty word instead of full time
+        String postTimeText = posts[position].postTimestamp;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+        String elapsedTimeText = "";
+        try {
+            elapsedTimeText = DateUtils.getRelativeTimeSpanString(
+                    dateFormat.parse(postTimeText).getTime(),
+                    System.currentTimeMillis(),
+                    DateUtils.SECOND_IN_MILLIS,
+                    0).toString();
+        } catch (ParseException e) {
+            Log.e(TAG,"Error converting string of post time to date "+e.toString());
+        }
+        holder.post_timestamp.setText(elapsedTimeText);
 
         // add listener to the row
         final int finalPosition = position;

@@ -1,10 +1,16 @@
 package usc.cs578.trojannow.manager.post;
 
 import android.content.Context;
+import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import usc.cs578.com.trojannow.R;
 
@@ -13,6 +19,7 @@ import usc.cs578.com.trojannow.R;
  */
 public class CommentViewerAdapter extends BaseAdapter {
 
+    private static final String TAG = "CommentViewerAdapter";
     private static final int TYPE_POST = 0;
     private static final int TYPE_COMMENT = 1;
 
@@ -94,7 +101,20 @@ public class CommentViewerAdapter extends BaseAdapter {
                 }
 
                 postHolder.post_text.setText(post.postText);
-                postHolder.post_timestamp.setText(post.postTimestamp);
+                // calculate elapsed time to show pretty word instead of full time
+                String postTimeText = post.postTimestamp;
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+                String elapsedTimeText = "";
+                try {
+                    elapsedTimeText = DateUtils.getRelativeTimeSpanString(
+                            dateFormat.parse(postTimeText).getTime(),
+                            System.currentTimeMillis(),
+                            DateUtils.SECOND_IN_MILLIS,
+                            0).toString();
+                } catch (ParseException e) {
+                    Log.e(TAG, "Error converting string of post time to date " + e.toString());
+                }
+                postHolder.post_timestamp.setText(elapsedTimeText);
                 break;
             }
             case TYPE_COMMENT: {
@@ -119,7 +139,20 @@ public class CommentViewerAdapter extends BaseAdapter {
                 }
 
                 commentHolder.commentText.setText(comments[index].commentText);
-                commentHolder.commentTimestamp.setText(comments[index].commentTimestamp);
+                // calculate elapsed time to show pretty word instead of full time
+                String postTimeText = comments[index].commentTimestamp;
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+                String elapsedTimeText = "";
+                try {
+                    elapsedTimeText = DateUtils.getRelativeTimeSpanString(
+                            dateFormat.parse(postTimeText).getTime(),
+                            System.currentTimeMillis(),
+                            DateUtils.SECOND_IN_MILLIS,
+                            0).toString();
+                } catch (ParseException e) {
+                    Log.e(TAG,"Error converting string of post time to date "+e.toString());
+                }
+                commentHolder.commentTimestamp.setText(elapsedTimeText);
                 break;
             }
         }

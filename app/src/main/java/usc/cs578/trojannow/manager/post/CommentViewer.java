@@ -8,9 +8,13 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,8 +30,8 @@ import usc.cs578.trojannow.manager.network.NetworkManager;
 public class CommentViewer extends ActionBarActivity {
 
     private static final String TAG = "PostEditor";
-    Post post;
-    Comment[] comments;
+    private Post post;
+    private Comment[] comments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,24 @@ public class CommentViewer extends ActionBarActivity {
         // register this view to receive intent name "PostViewer"
         LocalBroadcastManager.getInstance(this).registerReceiver(intentReceiver,
                 new IntentFilter(TAG));
+
+        // add listener to input field to inform user when text is too long
+        TextView commentField = (TextView) findViewById(R.id.commenting_text);
+        commentField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // warn user that they hit the maximum length
+                int maxLength = getResources().getInteger(R.integer.comment_text_length);
+                if(s.length() == maxLength) {
+                    String warnedText = String.format(getString(R.string.warn_comment_length),maxLength);
+                    Toast.makeText(CommentViewer.this, warnedText, Toast.LENGTH_LONG).show();
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {}
+        } );
 
         // request post and its comments
         requestPostAndComments();

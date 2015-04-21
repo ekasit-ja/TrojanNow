@@ -7,59 +7,85 @@
         android:id="@+id/app_bar"
         layout="@layout/app_bar" />
 
-    <RelativeLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/linearLayout2"
         android:layout_below="@+id/app_bar"
-        android:padding="10dp">
+        android:padding="10dp"
+        android:layout_above="@+id/linearLayout2">
 
-        <TextView
-            android:id="@+id/name_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginBottom="5dp"
-            android:text="@string/default_name_label"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/red_viterbi"
-            android:visibility="visible" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+    
+            <TextView
+                android:id="@+id/name_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginBottom="5dp"
+                android:layout_marginEnd="5dp"
+                android:text="@string/default_name_label"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/red_viterbi"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/dash_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_toEndOf="@+id/name_label"
+                android:text="@string/dash_label"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/grey"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/thermometer_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/dash_label"
+                android:layout_marginEnd="5dp"
+                android:text="@string/default_thermometer_label"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/prefix_location_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/thermometer_label"
+                android:text="@string/prefix_location_label"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/grey"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/location_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/prefix_location_label"
+                android:text="@string/default_location_label"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:visibility="gone" />
+
+        </RelativeLayout>
 
         <EditText
             android:id="@+id/post_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/name_label"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="top"
             android:background="@null"
+            android:gravity="top|start"
             android:hint="@string/hint_posting_text"
             android:inputType="textMultiLine"
+            android:maxLength="@integer/post_text_length"
             android:textCursorDrawable="@drawable/cursor_color" />
-
-        <TextView
-            android:id="@+id/location_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/post_text"
-            android:layout_marginStart="5dp"
-            android:layout_toEndOf="@+id/prefix_location"
-            android:text="@string/default_location_label"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:visibility="visible" />
-
-        <TextView
-            android:id="@+id/prefix_location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/post_text"
-            android:layout_marginStart="5dp"
-            android:layout_toEndOf="@+id/post_text"
-            android:text="@string/default_prefix_location_label"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/grey"
-            android:visibility="visible" />
-    </RelativeLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout2"

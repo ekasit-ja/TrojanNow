@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TrojanNow Test</string>
+    <string name="app_name">TrojanNow</string>
 
     <!-- String for option menu -->
     <string name="option_menu_drawer">Menu</string>
@@ -17,6 +17,7 @@
     <string name="comment_button">Send</string>
     <string name="hint_comment_text">"Write a comment …"</string>
     <string name="comment_viewer_toolbar_title">Comment</string>
+    <string name="warn_comment_length">"Comment is limited to %s characters"</string>
 
     <!-- String for PostEditor -->
     <string name="post_editor_toolbar_title">Make a new post</string>
@@ -26,9 +27,13 @@
     <string name="location_button">Location</string>
     <string name="thermometer_button">Thermometer</string>
     <string name="default_name_label">"Ekasit"</string>
-    <string name="default_prefix_location_label">"\u2014 at"</string>
+    <string name="prefix_location_label">"at "</string>
+    <string name="dash_label">"\u2014"</string>
     <string name="default_location_label">"Los Angeles"</string>
-    <string name="default_thermometer_label">"80\u2109F"</string>
+    <string name="default_thermometer_label">"80%s"</string>
+    <string name="celsius_suffix">"\u2103"</string>
+    <string name="fahrenheit_suffix">"\u2109"</string>
+    <string name="warn_post_length">"Post is limited to %s characters"</string>
 
     <!-- String for drawer fragment -->
     <string name="greeting_text">Hello Trojan</string>
