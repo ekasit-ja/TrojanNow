@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/app_bar"
+        layout="@layout/app_bar" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/app_bar"
+        android:paddingBottom="10dp"
+        android:paddingEnd="10dp"
+        android:paddingStart="20dp"
+        android:paddingTop="10dp">
+
+        <TextView
+            android:id="@+id/tempt_unit_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:text="@string/tempt_unit_label"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            tools:ignore="RelativeOverlap" />
+
+        <ImageButton
+            android:id="@+id/fahrenheit_button"
+            android:layout_width="@dimen/tempt_unit_setting_size"
+            android:layout_height="@dimen/tempt_unit_setting_size"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="30dp"
+            android:layout_toStartOf="@+id/celsius_button"
+            android:background="@null"
+            android:contentDescription="@string/fahrenheit_desc"
+            android:onClick="setTemptUnits"
+            android:scaleType="fitXY"
+            android:src="@mipmap/ic_fahrenheit" />
+
+        <ImageButton
+            android:id="@+id/celsius_button"
+            android:layout_width="@dimen/tempt_unit_setting_size"
+            android:layout_height="@dimen/tempt_unit_setting_size"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="20dp"
+            android:background="@null"
+            android:contentDescription="@string/celsius_desc"
+            android:onClick="setTemptUnits"
+            android:scaleType="fitXY"
+            android:src="@mipmap/ic_celsius" />
+    </RelativeLayout>
+
+
+</RelativeLayout>

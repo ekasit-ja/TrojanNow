@@ -13,4 +13,6 @@
 
     <dimen name="rating_button_size">30dp</dimen>
     <dimen name="rating_button_padding">8dp</dimen>
+
+    <dimen name="tempt_unit_setting_size">40dp</dimen>
 </resources>

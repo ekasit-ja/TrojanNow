@@ -13,6 +13,7 @@ import android.widget.BaseAdapter;
 import usc.cs578.com.trojannow.R;
 import usc.cs578.trojannow.manager.user.FriendViewer;
 import usc.cs578.trojannow.manager.user.Login;
+import usc.cs578.trojannow.manager.user.Settings;
 
 /*
  * Created by Ekasit_Ja on 17-Apr-15.
@@ -91,6 +92,10 @@ public class DrawerMenuAdapter extends BaseAdapter {
                             }
                             case ID_FRIENDS: {
                                 intent = new Intent(context, FriendViewer.class);
+                                break;
+                            }
+                            case ID_SETTINGS: {
+                                intent = new Intent(context, Settings.class);
                                 break;
                             }
                             default: {

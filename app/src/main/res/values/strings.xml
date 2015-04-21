@@ -63,6 +63,12 @@
     <string name="hint_confirm_password">"Confirm your password"</string>
     <string name="hint_display_name">"Name (Your displayed name)"</string>
 
+    <!--String for settings-->
+    <string name="settings_toolbar_title">"Settings"</string>
+    <string name="tempt_unit_label">"Temperature units"</string>
+    <string name="fahrenheit_desc">"Fahrenheit"</string>
+    <string name="celsius_desc">"Celsius"</string>
+
     <!--String for friends-->
     <string name="friends_toolbar_title">"Friends"</string>
     <string name="friends_search_title">"Search your friends"</string>
