@@ -1,0 +1,65 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/navigation_drawer_width"
+    android:layout_height="match_parent"
+    android:background="@color/highlight_grey"
+    tools:context="trojannow.DrawerMenu">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/profile_image"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="5dp"
+            android:contentDescription="@string/profile_image_desc"
+            android:src="@mipmap/ic_default_profile_image" />
+
+        <TextView
+           android:id="@+id/greeting_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="10dp"
+            android:text="@string/greeting_text"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/linearLayout">
+
+        <View
+            android:id="@+id/separator_top"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/red_viterbi" />
+
+        <ListView
+            android:id="@+id/menu_listView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:background="@color/white"
+            android:layout_below="@id/separator_top"
+            android:divider="@null"
+            android:listSelector="@null"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"/>
+
+        <View
+            android:id="@+id/separator_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_below="@id/menu_listView"
+            android:background="@color/red_viterbi" />
+    </RelativeLayout>
+
+</RelativeLayout>

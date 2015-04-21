@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="red_viterbi">#9d002d</color>
+    <color name="black">#000000</color>
+    <color name="grey">#888888</color>
+    <color name="highlight_grey">#DDDDDD</color>
+    <color name="accent_red_viterbi">#9d002d</color>
+    <color name="white">#ffffff</color>
+    <color name="red">#ff0000</color>
+    <color name="yellow_trojan">#fab92a</color>
+</resources>

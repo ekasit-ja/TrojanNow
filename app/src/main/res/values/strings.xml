@@ -1,0 +1,71 @@
+<resources>
+    <string name="app_name">TrojanNow Test</string>
+
+    <!-- String for option menu -->
+    <string name="option_menu_drawer">Menu</string>
+    <string name="option_pen">"Make a new post"</string>
+
+    <!-- String for PostViewer -->
+    <string name="post_viewer_page_name">"Posts"</string>
+    <string name="default_poster_name">Ekasit</string>
+    <string name="default_location">"Los Angeles"</string>
+    <string name="default_post_timestamp">"last christmas"</string>
+    <string name="default_post_text">"First day in LA"</string>
+    <string name="post_viewer_toolbar_title">Posts around you</string>
+
+    <!-- String for CommentViewer -->
+    <string name="comment_button">Send</string>
+    <string name="hint_comment_text">"Write a comment …"</string>
+    <string name="comment_viewer_toolbar_title">Comment</string>
+
+    <!-- String for PostEditor -->
+    <string name="post_editor_toolbar_title">Make a new post</string>
+    <string name="hint_posting_text">"What's on your mind?"</string>
+    <string name="post_button">Post</string>
+    <string name="name_button">Name</string>
+    <string name="location_button">Location</string>
+    <string name="thermometer_button">Thermometer</string>
+    <string name="default_name_label">"Ekasit"</string>
+    <string name="default_prefix_location_label">"\u2014 at"</string>
+    <string name="default_location_label">"Los Angeles"</string>
+    <string name="default_thermometer_label">"80\u2109F"</string>
+
+    <!-- String for drawer fragment -->
+    <string name="greeting_text">Hello Trojan</string>
+    <string name="default_menu_item">"Log in"</string>
+
+    <!--String for Login-->
+    <string name="login_toolbar_title">"Sign up"</string>
+    <string name="hint_email">"Email"</string>
+    <string name="hint_password">"Password"</string>
+    <string name="login_button">"Sign in"</string>
+    <string name="help_pass_button">"Forgot password?"</string>
+    <string name="register_button">"Create New Account"</string>
+
+    <!--String for forgot password-->
+    <string name="password_toolbar_title">"Forgot password?"</string>
+    <string name="hint_email__help_password">"Email"</string>
+    <string name="send_help_password_button">"Submit"</string>
+    <string name="send_help_toast">"You password has been sent to your email"</string>
+
+    <!--String for register-->
+    <string name="register_toolbar_title">"Welcome to Trojan Now!"</string>
+    <string name="hint_confirm_password">"Confirm your password"</string>
+    <string name="hint_display_name">"Name (Your displayed name)"</string>
+
+    <!--String for friends-->
+    <string name="friends_toolbar_title">"Friends"</string>
+    <string name="friends_search_title">"Search your friends"</string>
+    <string name="hint_search_friend">"Enter your friend's name"</string>
+    <string name="friend_default_name">"John Jones"</string>
+
+
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+
+    <string name="navigation_drawer_open">Open</string>
+    <string name="navigation_drawer_close">Close</string>
+    <string name="profile_image_desc">Profile image</string>
+
+</resources>

@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".PostViewer">
+
+    <item
+        android:id="@+id/option_menu_drawer"
+        android:icon="@mipmap/ic_menu"
+        android:orderInCategory="200"
+        android:title="@string/option_menu_drawer"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/option_pen"
+        android:icon="@mipmap/ic_pen"
+        android:orderInCategory="100"
+        android:title="@string/option_pen"
+        app:showAsAction="ifRoom" />
+
+</menu>
