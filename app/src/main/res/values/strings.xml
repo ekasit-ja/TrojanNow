@@ -34,6 +34,11 @@
     <string name="celsius_suffix">"\u2103"</string>
     <string name="fahrenheit_suffix">"\u2109"</string>
     <string name="warn_post_length">"Post is limited to %s characters"</string>
+    <string name="default_rating_score">55</string>
+    <string name="default_replied_count">12</string>
+    <string name="replied_label">reply</string>
+    <string name="plus_desc">Like</string>
+    <string name="minus_desc">Dislike</string>
 
     <!-- String for drawer fragment -->
     <string name="greeting_text">Hello Trojan</string>

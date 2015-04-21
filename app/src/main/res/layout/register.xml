@@ -77,8 +77,8 @@
         android:layout_below="@+id/display_name"
         android:layout_centerHorizontal="true"
         android:background="@drawable/button_rounded_style"
-        android:text="@string/register_button"
         android:onClick="doRegister"
+        android:text="@string/register_button"
         android:textAllCaps="false" />
 
 </RelativeLayout>

@@ -8,17 +8,17 @@
         layout="@layout/app_bar" />
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_above="@+id/linearLayout2"
         android:layout_below="@+id/app_bar"
-        android:padding="10dp"
-        android:layout_above="@+id/linearLayout2">
+        android:orientation="vertical"
+        android:padding="10dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-    
+
             <TextView
                 android:id="@+id/name_label"
                 android:layout_width="wrap_content"
@@ -47,8 +47,9 @@
                 android:id="@+id/thermometer_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/dash_label"
+                android:layout_marginBottom="5dp"
                 android:layout_marginEnd="5dp"
+                android:layout_toEndOf="@+id/dash_label"
                 android:text="@string/default_thermometer_label"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:visibility="gone" />
@@ -67,6 +68,7 @@
                 android:id="@+id/location_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
                 android:layout_toEndOf="@+id/prefix_location_label"
                 android:text="@string/default_location_label"
                 android:textAppearance="?android:attr/textAppearanceMedium"

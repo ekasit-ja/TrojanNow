@@ -10,4 +10,7 @@
     <dimen name="button_round_radius">5dp</dimen>
 
     <dimen name="editText_block_width">300dp</dimen>
+
+    <dimen name="rating_button_size">30dp</dimen>
+    <dimen name="rating_button_padding">8dp</dimen>
 </resources>
