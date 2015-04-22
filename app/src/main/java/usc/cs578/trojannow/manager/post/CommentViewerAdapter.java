@@ -19,7 +19,7 @@ import usc.cs578.com.trojannow.R;
  */
 public class CommentViewerAdapter extends BaseAdapter {
 
-    private static final String TAG = "CommentViewerAdapter";
+    private static final String TAG = CommentViewerAdapter.class.getSimpleName();
     private static final int TYPE_POST = 0;
     private static final int TYPE_COMMENT = 1;
 

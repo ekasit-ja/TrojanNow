@@ -29,9 +29,7 @@ import usc.cs578.trojannow.manager.network.NetworkManager;
  */
 public class CommentViewer extends ActionBarActivity {
 
-    private static final String TAG = "PostEditor";
-    private Post post;
-    private Comment[] comments;
+    private static final String TAG = CommentViewer.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,13 +86,13 @@ public class CommentViewer extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get extra data included in the Intent
-            if(intent.getBooleanExtra("status", false)) {
-                String method = intent.getStringExtra("method");
+            if(intent.getBooleanExtra(Method.statusKey, false)) {
+                String method = intent.getStringExtra(Method.methodKey);
                 switch (method) {
                     case Method.getPostAndComments: {
-                        String jsonString = intent.getStringExtra("result");
-                        post = convertToPost(jsonString);
-                        comments = convertToComments(jsonString);
+                        String jsonString = intent.getStringExtra(Method.resultKey);
+                        Post post = convertToPost(jsonString);
+                        Comment[] comments = convertToComments(jsonString);
                         populateListView(post, comments);
                         break;
                     }
@@ -112,8 +110,8 @@ public class CommentViewer extends ActionBarActivity {
     public void requestPostAndComments() {
         // request NetworkManager component to get data from server
         Intent intent = new Intent(this, NetworkManager.class);
-        intent.putExtra("method", Method.getPostAndComments);
-        intent.putExtra("postId", getIntent().getExtras().getInt("postId"));
+        intent.putExtra(Method.methodKey, Method.getPostAndComments);
+        intent.putExtra(Method.postIdKey, getIntent().getExtras().getInt(Method.postIdKey));
         startService(intent);
     }
 

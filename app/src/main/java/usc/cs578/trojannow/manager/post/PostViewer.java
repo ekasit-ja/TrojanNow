@@ -28,7 +28,7 @@ import usc.cs578.trojannow.manager.network.NetworkManager;
 
 public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragmentInteractionListener {
 
-    private static final String TAG = "PostViewer";
+    private static final String TAG = PostViewer.class.getSimpleName();
     private DrawerLayout drawerLayout;
 
     @Override
@@ -89,11 +89,11 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get extra data included in the Intent
-            if(intent.getBooleanExtra("status", false)) {
-                String method = intent.getStringExtra("method");
-                switch (method) {
+            if(intent.getBooleanExtra(Method.statusKey, false)) {
+                String methodName = intent.getStringExtra(Method.methodKey);
+                switch (methodName) {
                     case Method.getPostsByLocation: {
-                        String jsonString = intent.getStringExtra("result");
+                        String jsonString = intent.getStringExtra(Method.resultKey);
                         Post[] posts = convertToPosts(jsonString);
                         populateListView(posts);
                         break;
@@ -146,7 +146,7 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
     public void requestPostsByLocation() {
         // request NetworkManager component to get data from server
         Intent intent = new Intent(this, NetworkManager.class);
-        intent.putExtra("method", Method.getPostsByLocation);
+        intent.putExtra(Method.methodKey, Method.getPostsByLocation);
         intent.putExtra("location", "Los Angeles");
         startService(intent);
     }

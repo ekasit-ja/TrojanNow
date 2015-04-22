@@ -15,7 +15,7 @@ import usc.cs578.com.trojannow.R;
  */
 public class Settings extends ActionBarActivity {
 
-    private static final String TAG = "Settings";
+    private static final String TAG = Settings.class.getSimpleName();
     private static final String PREF_NAME = "TrojanNow-settings";
     private static final String TEMPT_UNITS = "temptUnits";
     private static final int FAHRENHEIT = 0;

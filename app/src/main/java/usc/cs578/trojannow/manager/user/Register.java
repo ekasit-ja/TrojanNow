@@ -13,16 +13,19 @@ import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import usc.cs578.com.trojannow.R;
 import usc.cs578.trojannow.manager.network.Method;
+import usc.cs578.trojannow.manager.network.NetworkManager;
+import usc.cs578.trojannow.manager.network.Url;
 
 /*
  * Created by Ekasit_Ja on 17-Apr-15.
  */
 public class Register extends ActionBarActivity {
 
-    private static final String TAG = "Register";
+    private static final String TAG = Register.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,13 +69,11 @@ public class Register extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get extra data included in the Intent
-            if(intent.getBooleanExtra("status", false)) {
-                String method = intent.getStringExtra("method");
+            if(intent.getBooleanExtra(Method.statusKey, false)) {
+                String method = intent.getStringExtra(Method.methodKey);
                 switch (method) {
-                    case Method.getPostsByLocation: {
-                        String jsonString = intent.getStringExtra("result");
-                        /*Post[] posts = convertToPosts(jsonString);
-                        populateListView(posts);*/
+                    case Method.registerUser: {
+                        String jsonString = intent.getStringExtra(Method.resultKey);
                         break;
                     }
                     default: {
@@ -87,7 +88,25 @@ public class Register extends ActionBarActivity {
     };
 
     public void doRegister(View v) {
+        String email = ((EditText) findViewById(R.id.email)).getText().toString();
+        String password = ((EditText) findViewById(R.id.password)).getText().toString();
+        String confirm_password = ((EditText) findViewById(R.id.confirm_password)).getText().toString();
+        String display_name = ((EditText) findViewById(R.id.display_name)).getText().toString();
 
+        if(!password.equals(confirm_password)) {
+            Toast.makeText(this, getString(R.string.password_not_same),Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        String parameter = Url.emailKey+Url.postAssigner+email+Url.postSeparator;
+        parameter += Url.passwordKey+Url.postAssigner+password+Url.postSeparator;
+        parameter += Url.displayNameKey+Url.postAssigner+display_name;
+
+        // request NetworkManager component to register new user
+        Intent intent = new Intent(this, NetworkManager.class);
+        intent.putExtra(Method.methodKey, Method.registerUser);
+        intent.putExtra(Method.parameterKey, parameter);
+        startService(intent);
     }
 
 }

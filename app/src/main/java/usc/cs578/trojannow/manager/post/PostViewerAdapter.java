@@ -19,12 +19,13 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import usc.cs578.com.trojannow.R;
+import usc.cs578.trojannow.manager.network.Method;
 
 /*
  * Created by Ekasit_Ja on 14-Apr-15.
  */
 public class PostViewerAdapter extends BaseAdapter {
-    private static final String TAG = "PostViewerAdapter";
+    private static final String TAG = PostViewerAdapter.class.getSimpleName();
     private static final int READ_MORE_OFFSET = 11;
     private static final int PAINT_OFFSET = 9;
     private static final String READ_MORE_SUFFIX = "… read more";
@@ -143,7 +144,7 @@ public class PostViewerAdapter extends BaseAdapter {
             public void onClick(View v) {
                 // send intent to initiate activity post editor
                 Intent intent = new Intent(context, CommentViewer.class);
-                intent.putExtra("postId", PostViewerAdapter.this.posts[finalPosition].id);
+                intent.putExtra(Method.postIdKey, PostViewerAdapter.this.posts[finalPosition].id);
                 context.startActivity(intent);
             }
         });

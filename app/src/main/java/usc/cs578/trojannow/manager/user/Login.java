@@ -22,7 +22,7 @@ import usc.cs578.trojannow.manager.network.Method;
  */
 public class Login extends ActionBarActivity {
 
-    private static final String TAG = "Login";
+    private static final String TAG = Login.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,11 +63,11 @@ public class Login extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get extra data included in the Intent
-            if(intent.getBooleanExtra("status", false)) {
-                String method = intent.getStringExtra("method");
+            if(intent.getBooleanExtra(Method.statusKey, false)) {
+                String method = intent.getStringExtra(Method.methodKey);
                 switch (method) {
                     case Method.getPostsByLocation: {
-                        String jsonString = intent.getStringExtra("result");
+                        String jsonString = intent.getStringExtra(Method.resultKey);
                         /*Post[] posts = convertToPosts(jsonString);
                         populateListView(posts);*/
                         break;

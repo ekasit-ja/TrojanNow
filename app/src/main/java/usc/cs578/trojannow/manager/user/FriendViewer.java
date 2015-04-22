@@ -26,7 +26,7 @@ import usc.cs578.trojannow.manager.network.Method;
  */
 public class FriendViewer extends ActionBarActivity {
 
-    private static final String TAG = "Friends";
+    private static final String TAG = Friend.class.getSimpleName();
 
     private ListView friendList;
     private ArrayList<Friend> friends;
@@ -141,11 +141,11 @@ public class FriendViewer extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get extra data included in the Intent
-            if(intent.getBooleanExtra("status", false)) {
-                String method = intent.getStringExtra("method");
+            if(intent.getBooleanExtra(Method.statusKey, false)) {
+                String method = intent.getStringExtra(Method.methodKey);
                 switch (method) {
                     case Method.getPostsByLocation: {
-                        String jsonString = intent.getStringExtra("result");
+                        String jsonString = intent.getStringExtra(Method.resultKey);
                         /*Post[] posts = convertToPosts(jsonString);
                         populateListView(posts);*/
                         break;

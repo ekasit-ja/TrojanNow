@@ -4,24 +4,26 @@ import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 /*
  * Created by Ekasit_Ja on 14-Apr-15.
  */
 public class RestCaller {
 
-    private String url;
+    private static final int READ_TIMEOUT = 10000; // milliseconds
+    private static final int CONNECT_TIMEOUT = 10000; // milliseconds
 
-    public RestCaller(String url) {
-        this.url = url;
+    public RestCaller() {
     }
 
-    public String callGetMethod() throws Exception{
+    public static String callServer(String url, String httpMethod, String postParameter) throws Exception {
         Exception exception = null;
         HttpURLConnection conn = null;
         InputStream is = null;
@@ -29,18 +31,50 @@ public class RestCaller {
         String jsonString = "";
 
         // establish http request and get response
-        try {
-            conn = (HttpURLConnection) new URL(url).openConnection();
-            conn.setRequestMethod("GET");
-            conn.setDoInput(true);
-            conn.setReadTimeout(10000 /* milliseconds */);
-            conn.setConnectTimeout(10000 /* milliseconds */);
-            conn.connect();
-            is = new BufferedInputStream(conn.getInputStream());
+        if(httpMethod.equals(Url.GET)) {
+            try {
+                conn = (HttpURLConnection) new URL(url).openConnection();
+                conn.setRequestMethod(Url.GET);
+                conn.setDoInput(true);
+                conn.setReadTimeout(READ_TIMEOUT);
+                conn.setConnectTimeout(CONNECT_TIMEOUT);
+                conn.connect();
+
+                is = new BufferedInputStream(conn.getInputStream());
+            }
+            catch (Exception e) {
+                Log.e("Connection Error", "Error making http request " + e.toString());
+                exception = e;
+            }
         }
-        catch (Exception e) {
-            Log.e("Connection Error", "Error making http request " + e.toString());
-            exception = e;
+        else {
+            try {
+                byte[] postData = postParameter.getBytes(Charset.forName("UTF-8"));
+                int postDataLength = postData.length;
+                conn = (HttpURLConnection) new URL(url).openConnection();
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+                conn.setInstanceFollowRedirects(false);
+                conn.setRequestMethod(Url.POST);
+                conn.setReadTimeout(READ_TIMEOUT);
+                conn.setConnectTimeout(CONNECT_TIMEOUT);
+                conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+                conn.setRequestProperty( "charset", "utf-8");
+                conn.setRequestProperty( "Content-Length", Integer.toString(postDataLength));
+                conn.setUseCaches(false);
+
+                // send request data
+                DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
+                wr.write(postData);
+                wr.flush();
+                wr.close();
+
+                is = new BufferedInputStream(conn.getInputStream());
+            }
+            catch (Exception e) {
+                Log.e("Connection Error", "Error making http request " + e.toString());
+                exception = e;
+            }
         }
 
         // convert response to String
@@ -87,4 +121,5 @@ public class RestCaller {
 
         return jsonString;
     }
+
 }
