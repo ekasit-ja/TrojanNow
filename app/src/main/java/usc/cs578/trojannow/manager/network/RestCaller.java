@@ -1,5 +1,8 @@
 package usc.cs578.trojannow.manager.network;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.wifi.WifiManager;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -11,24 +14,33 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.List;
 
 /*
  * Created by Ekasit_Ja on 14-Apr-15.
  */
 public class RestCaller {
 
+    private static final String TAG = RestCaller.class.getSimpleName();
     private static final int READ_TIMEOUT = 10000; // milliseconds
     private static final int CONNECT_TIMEOUT = 10000; // milliseconds
 
     public RestCaller() {
     }
 
-    public static String callServer(String url, String httpMethod, String postParameter) throws Exception {
+    public String callServer(Context context, String url, String httpMethod, String postParameter) throws Exception {
+        SharedPreferences settings = context.getSharedPreferences(Method.PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        String sessionId = settings.getString(Url.sessionIdKey, "");
+
         Exception exception = null;
         HttpURLConnection conn = null;
         InputStream is = null;
         BufferedReader reader = null;
         String jsonString = "";
+        String macAddress = getMacAddress(context);
+        String cookieString = Url.macAddressKey+Url.postAssigner+macAddress+Url.semicolon +
+                Url.sessionIdKey+Url.postAssigner+sessionId+Url.semicolon;
 
         // establish http request and get response
         if(httpMethod.equals(Url.GET)) {
@@ -38,6 +50,7 @@ public class RestCaller {
                 conn.setDoInput(true);
                 conn.setReadTimeout(READ_TIMEOUT);
                 conn.setConnectTimeout(CONNECT_TIMEOUT);
+                conn.setRequestProperty("Cookie", cookieString);
                 conn.connect();
 
                 is = new BufferedInputStream(conn.getInputStream());
@@ -61,6 +74,7 @@ public class RestCaller {
                 conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
                 conn.setRequestProperty( "charset", "utf-8");
                 conn.setRequestProperty( "Content-Length", Integer.toString(postDataLength));
+                conn.setRequestProperty("Cookie", cookieString);
                 conn.setUseCaches(false);
 
                 // send request data
@@ -80,6 +94,28 @@ public class RestCaller {
         // convert response to String
         try {
             if(is != null) {
+                // read cookie
+                try {
+                    List<String> cookies = conn.getHeaderFields().get("Set-Cookie");
+                    for (String cookie : cookies) {
+                        if(cookie.indexOf(";") > 0) {
+                            cookie = cookie.substring(0, cookie.indexOf(";"));
+                        }
+                        String cookieName = cookie.substring(0, cookie.indexOf("="));
+                        String cookieValue = cookie.substring(cookie.indexOf("=") + 1, cookie.length());
+
+                        if(cookieName.equals(Url.sessionIdKey)) {
+                            // set session id in shared preferences
+                            editor.putString(Url.sessionIdKey, cookieValue);
+                            editor.apply();
+                        }
+                    }
+                }
+                catch(Exception e) {
+                    Log.w(TAG, "Server response has no cookie");
+                }
+
+                // read response data
                 reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
                 StringBuilder sb = new StringBuilder();
                 String line = reader.readLine();
@@ -120,6 +156,11 @@ public class RestCaller {
         }
 
         return jsonString;
+    }
+
+    private String getMacAddress(Context context) {
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        return wifiManager.getConnectionInfo().getMacAddress();
     }
 
 }

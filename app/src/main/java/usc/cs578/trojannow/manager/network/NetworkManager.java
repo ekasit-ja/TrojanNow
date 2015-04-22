@@ -1,15 +1,15 @@
 package usc.cs578.trojannow.manager.network;
 
 import android.app.IntentService;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import usc.cs578.trojannow.manager.post.CommentViewer;
 import usc.cs578.trojannow.manager.post.PostViewer;
+import usc.cs578.trojannow.manager.user.ForgotPassword;
+import usc.cs578.trojannow.manager.user.Login;
 import usc.cs578.trojannow.manager.user.Register;
 
 /*
@@ -59,6 +59,22 @@ public class NetworkManager extends IntentService {
                     sendIntent(url, callbackIntent, Url.POST, postParameter);
                     break;
                 }
+                case Method.forgotPassword: {
+                    String email = String.valueOf(intent.getExtras().getString(Method.emailKey));
+                    url = String.format(Url.forgotPassword, Uri.encode(email));
+                    callbackIntent = new Intent(ForgotPassword.class.getSimpleName());
+                    callbackIntent.putExtra(Method.methodKey, methodName);
+                    sendIntent(url, callbackIntent, Url.GET, "");
+                    break;
+                }
+                case Method.login: {
+                    String postParameter = intent.getExtras().getString(Method.parameterKey);
+                    url = Url.login;
+                    callbackIntent = new Intent(Login.class.getSimpleName());
+                    callbackIntent.putExtra(Method.methodKey, methodName);
+                    sendIntent(url, callbackIntent, Url.POST, postParameter);
+                    break;
+                }
                 default: {
                     Log.w(TAG, "method switch falls default case");
                 }
@@ -75,11 +91,10 @@ public class NetworkManager extends IntentService {
         try {
             // make a request to get response
             if(httpMethod.equals(Url.GET)) {
-                jsonString = RestCaller.callServer(url, Url.GET, "");
+                jsonString = new RestCaller().callServer(this, url, Url.GET, "");
             }
             else {
-                postParameter += Url.postSeparator+Url.macAddressKey+Url.postAssigner+getMacAddress(this);
-                jsonString = RestCaller.callServer(url, Url.POST, postParameter);
+                jsonString = new RestCaller().callServer(this, url, Url.POST, postParameter);
             }
 
             // set value of intent
@@ -94,11 +109,6 @@ public class NetworkManager extends IntentService {
 
         // send intent to caller
         LocalBroadcastManager.getInstance(this).sendBroadcast(callbackIntent);
-    }
-
-    private String getMacAddress(Context context) {
-        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        return wifiManager.getConnectionInfo().getMacAddress();
     }
 
 }

@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import usc.cs578.com.trojannow.R;
+import usc.cs578.trojannow.manager.network.Method;
 
 /*
  * Created by Ekasit_Ja on 21-Apr-15.
@@ -16,10 +17,7 @@ import usc.cs578.com.trojannow.R;
 public class Settings extends ActionBarActivity {
 
     private static final String TAG = Settings.class.getSimpleName();
-    private static final String PREF_NAME = "TrojanNow-settings";
-    private static final String TEMPT_UNITS = "temptUnits";
-    private static final int FAHRENHEIT = 0;
-    private static final int CELSIUS = 1;
+
     private SharedPreferences settings;
 
     @Override
@@ -40,8 +38,8 @@ public class Settings extends ActionBarActivity {
         });
 
         // initiate share shared preferences
-        settings = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
-        if(settings.getInt(TEMPT_UNITS, FAHRENHEIT) == FAHRENHEIT) {
+        settings = getSharedPreferences(Method.PREF_NAME, MODE_PRIVATE);
+        if(settings.getInt(Method.TEMPT_UNITS, Method.FAHRENHEIT) == Method.FAHRENHEIT) {
             ImageButton fah_button = (ImageButton) findViewById(R.id.fahrenheit_button);
             fah_button.performClick();
         }
@@ -60,13 +58,13 @@ public class Settings extends ActionBarActivity {
             case R.id.fahrenheit_button: {
                 fah_button.setImageResource(R.mipmap.ic_fahrenheit_selected);
                 cel_button.setImageResource(R.mipmap.ic_celsius);
-                editor.putInt(TEMPT_UNITS, FAHRENHEIT);
+                editor.putInt(Method.TEMPT_UNITS, Method.FAHRENHEIT);
                 break;
             }
             case R.id.celsius_button: {
                 fah_button.setImageResource(R.mipmap.ic_fahrenheit);
                 cel_button.setImageResource(R.mipmap.ic_celsius_selected);
-                editor.putInt(TEMPT_UNITS, CELSIUS);
+                editor.putInt(Method.TEMPT_UNITS, Method.CELSIUS);
                 break;
             }
             default: {

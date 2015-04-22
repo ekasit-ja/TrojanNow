@@ -44,10 +44,6 @@
             android:name="usc.cs578.trojannow.manager.user.Register"
             android:label="@string/app_name"
             android:parentActivityName="usc.cs578.trojannow.manager.user.Login" >
-            <!--<intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
         </activity>
 
         <activity

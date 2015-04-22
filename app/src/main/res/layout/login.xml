@@ -47,6 +47,7 @@
         android:layout_below="@+id/password"
         android:layout_centerHorizontal="true"
         android:background="@drawable/button_rounded_style"
+        android:onClick="doLogin"
         android:text="@string/login_button"
         android:textAllCaps="false" />
 

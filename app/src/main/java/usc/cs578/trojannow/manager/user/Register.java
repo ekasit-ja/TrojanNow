@@ -15,6 +15,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import usc.cs578.com.trojannow.R;
 import usc.cs578.trojannow.manager.network.Method;
 import usc.cs578.trojannow.manager.network.NetworkManager;
@@ -74,6 +77,7 @@ public class Register extends ActionBarActivity {
                 switch (method) {
                     case Method.registerUser: {
                         String jsonString = intent.getStringExtra(Method.resultKey);
+                        displayResult(jsonString);
                         break;
                     }
                     default: {
@@ -86,6 +90,25 @@ public class Register extends ActionBarActivity {
             }
         }
     };
+
+    private void displayResult(String jsonString) {
+        String toastText = "";
+        try {
+            // convert JSON string to JSON object
+            JSONObject jObj = new JSONObject(jsonString);
+
+            if(jObj.getBoolean(Url.statusKey)) {
+                toastText = "Signing up is successful";
+            }
+            else {
+                toastText = jObj.getString(Url.errorMsgKey);
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Error parsing JSON array " + e.toString());
+        }
+
+        Toast.makeText(this, toastText, Toast.LENGTH_LONG).show();
+    }
 
     public void doRegister(View v) {
         String email = ((EditText) findViewById(R.id.email)).getText().toString();

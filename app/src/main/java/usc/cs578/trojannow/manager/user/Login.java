@@ -13,9 +13,16 @@ import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import usc.cs578.com.trojannow.R;
 import usc.cs578.trojannow.manager.network.Method;
+import usc.cs578.trojannow.manager.network.NetworkManager;
+import usc.cs578.trojannow.manager.network.Url;
 
 /*
  * Created by Ekasit_Ja on 17-Apr-15.
@@ -66,10 +73,9 @@ public class Login extends ActionBarActivity {
             if(intent.getBooleanExtra(Method.statusKey, false)) {
                 String method = intent.getStringExtra(Method.methodKey);
                 switch (method) {
-                    case Method.getPostsByLocation: {
+                    case Method.login: {
                         String jsonString = intent.getStringExtra(Method.resultKey);
-                        /*Post[] posts = convertToPosts(jsonString);
-                        populateListView(posts);*/
+                        handleLoginResponse(jsonString);
                         break;
                     }
                     default: {
@@ -83,6 +89,22 @@ public class Login extends ActionBarActivity {
         }
     };
 
+    private void handleLoginResponse(String jsonString) {
+        try {
+            JSONObject jObj = new JSONObject(jsonString);
+            if(jObj.getBoolean(Url.statusKey)) {
+                finish();
+            }
+            else {
+                String toastText = jObj.getString(Url.errorMsgKey);
+                Toast.makeText(this, toastText, Toast.LENGTH_LONG).show();
+            }
+
+        } catch (JSONException e) {
+            Log.e(TAG, "Error parsing JSON data");
+        }
+    }
+
     public void goToHelpPassword(View v) {
         Intent intent = new Intent(this, ForgotPassword.class);
         startActivity(intent);
@@ -91,6 +113,20 @@ public class Login extends ActionBarActivity {
     public void goToRegister(View v) {
         Intent intent = new Intent(this, Register.class);
         startActivity(intent);
+    }
+
+    public void doLogin(View v) {
+        String email = ((TextView) findViewById(R.id.email)).getText().toString().trim();
+        String password = ((TextView) findViewById(R.id.password)).getText().toString().trim();
+
+        String parameter = Url.emailKey+Url.postAssigner+email+Url.postSeparator;
+        parameter += Url.passwordKey+Url.postAssigner+password+Url.postSeparator;
+
+        // request NetworkManager component to register new user
+        Intent intent = new Intent(this, NetworkManager.class);
+        intent.putExtra(Method.methodKey, Method.login);
+        intent.putExtra(Method.parameterKey, parameter);
+        startService(intent);
     }
 
 }
