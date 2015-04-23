@@ -23,6 +23,7 @@ import usc.cs578.com.trojannow.R;
 import usc.cs578.trojannow.manager.network.Method;
 import usc.cs578.trojannow.manager.network.NetworkManager;
 import usc.cs578.trojannow.manager.network.Url;
+import usc.cs578.trojannow.manager.post.PostViewer;
 
 /*
  * Created by Ekasit_Ja on 17-Apr-15.
@@ -93,6 +94,12 @@ public class Login extends ActionBarActivity {
         try {
             JSONObject jObj = new JSONObject(jsonString);
             if(jObj.getBoolean(Url.statusKey)) {
+                // request post viewer to refresh page
+                Intent intent = new Intent(this, PostViewer.class);
+                intent.putExtra(Method.methodKey, Method.loginSuccess);
+                startActivity(intent);
+
+                // terminate self
                 finish();
             }
             else {

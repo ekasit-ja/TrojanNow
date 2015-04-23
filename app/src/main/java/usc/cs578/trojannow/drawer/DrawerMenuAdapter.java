@@ -2,6 +2,7 @@ package usc.cs578.trojannow.drawer;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -11,6 +12,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import usc.cs578.com.trojannow.R;
+import usc.cs578.trojannow.manager.network.Method;
+import usc.cs578.trojannow.manager.network.Url;
+import usc.cs578.trojannow.manager.post.PostViewer;
 import usc.cs578.trojannow.manager.user.FriendViewer;
 import usc.cs578.trojannow.manager.user.Login;
 import usc.cs578.trojannow.manager.user.Settings;
@@ -23,20 +27,35 @@ public class DrawerMenuAdapter extends BaseAdapter {
     private static final int ID_LOGIN = 0;
     private static final int ID_SETTINGS = 1;
     private static final int ID_FRIENDS = 2;
+    private static final int ID_LOGOUT = 3;
 
     private Context context;
     private DrawerLayout drawerLayout;
     private DrawerMenuItem[] drawerMenuItems;
+    private SharedPreferences sharedPreferences;
 
     public DrawerMenuAdapter(Context context, DrawerLayout drawerLayout) {
         this.context = context;
         this.drawerLayout = drawerLayout;
 
+        // check login
+        sharedPreferences = context.getSharedPreferences(Method.PREF_NAME, Context.MODE_PRIVATE);
+        String sessionId = sharedPreferences.getString(Url.sessionIdKey, "");
+
         // populate menu items
-        drawerMenuItems = new DrawerMenuItem[3];
-        drawerMenuItems[0] = new DrawerMenuItem(ID_LOGIN,"Log in");
-        drawerMenuItems[1] = new DrawerMenuItem(ID_SETTINGS,"Settings");
-        drawerMenuItems[2] = new DrawerMenuItem(ID_FRIENDS,"Friends");
+        if(sessionId.length() > 0) {
+            // already log in
+            drawerMenuItems = new DrawerMenuItem[3];
+            drawerMenuItems[0] = new DrawerMenuItem(ID_FRIENDS, "Friends");
+            drawerMenuItems[1] = new DrawerMenuItem(ID_SETTINGS, "Settings");
+            drawerMenuItems[2] = new DrawerMenuItem(ID_LOGOUT, "Sign out");
+        }
+        else {
+            // not log in
+            drawerMenuItems = new DrawerMenuItem[2];
+            drawerMenuItems[0] = new DrawerMenuItem(ID_LOGIN, "Sign in");
+            drawerMenuItems[1] = new DrawerMenuItem(ID_SETTINGS, "Settings");
+        }
     }
 
     @Override
@@ -98,6 +117,10 @@ public class DrawerMenuAdapter extends BaseAdapter {
                                 intent = new Intent(context, Settings.class);
                                 break;
                             }
+                            case ID_LOGOUT: {
+                                doLogout();
+                                return;
+                            }
                             default: {
                                 Log.w(TAG, "Drawer menu falls case default");
                                 return;
@@ -110,5 +133,16 @@ public class DrawerMenuAdapter extends BaseAdapter {
         });
 
         return row;
+    }
+
+    private void doLogout() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(Url.sessionIdKey);
+        editor.apply();
+
+        // notify post viewer to refresh page
+        Intent intent = new Intent(context, PostViewer.class);
+        intent.putExtra(Method.methodKey, Method.loginSuccess);
+        context.startActivity(intent);
     }
 }

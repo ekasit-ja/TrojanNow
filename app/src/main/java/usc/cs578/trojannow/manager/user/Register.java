@@ -22,6 +22,7 @@ import usc.cs578.com.trojannow.R;
 import usc.cs578.trojannow.manager.network.Method;
 import usc.cs578.trojannow.manager.network.NetworkManager;
 import usc.cs578.trojannow.manager.network.Url;
+import usc.cs578.trojannow.manager.post.PostViewer;
 
 /*
  * Created by Ekasit_Ja on 17-Apr-15.
@@ -78,6 +79,29 @@ public class Register extends ActionBarActivity {
                     case Method.registerUser: {
                         String jsonString = intent.getStringExtra(Method.resultKey);
                         displayResult(jsonString);
+                        break;
+                    }
+                    case Method.loginAfterRegister: {
+                        String jsonString = intent.getStringExtra(Method.resultKey);
+                        try {
+                            // convert JSON string to JSON object
+                            JSONObject jObj = new JSONObject(jsonString);
+
+                            if(jObj.getBoolean(Url.statusKey)) {
+                                // directly go to post viewer and close login page automatically
+                                intent = new Intent(context, PostViewer.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                intent.putExtra(Method.methodKey, Method.registerSuccess);
+                                startActivity(intent);
+                            }
+                            else {
+                                Toast.makeText(context,
+                                        jObj.getString(Url.errorMsgKey),
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        } catch (JSONException e) {
+                            Log.e(TAG, "Error parsing JSON array " + e.toString());
+                        }
                         break;
                     }
                     default: {
@@ -147,7 +171,6 @@ public class Register extends ActionBarActivity {
         intent.putExtra(Method.methodKey, Method.login);
         intent.putExtra(Method.parameterKey, parameter);
         startService(intent);
-        finish();
     }
 
 }

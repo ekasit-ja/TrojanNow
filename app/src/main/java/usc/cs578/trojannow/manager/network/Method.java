@@ -22,4 +22,8 @@ public class Method {
     public static final String registerUser = "registerUser";
     public static final String forgotPassword = "forgotPassword";
     public static final String login = "login";
+    public static final String loginSuccess = "loginSuccess";
+    public static final String registerSuccess = "registerSuccess";
+    public static final String logoutSuccess = "logoutSuccess";
+    public static final String loginAfterRegister = "loginAfterRegister";
 }

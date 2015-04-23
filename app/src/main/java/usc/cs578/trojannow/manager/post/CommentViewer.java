@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -27,14 +29,20 @@ import usc.cs578.trojannow.manager.network.NetworkManager;
 /*
  * Created by Ekasit_Ja on 14-Apr-15.
  */
-public class CommentViewer extends ActionBarActivity {
+public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = CommentViewer.class.getSimpleName();
+    private static final int spinnerShowTime = 1000;
+
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.comment_viewer);
+        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_posts_list);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorSchemeResources(R.color.red_viterbi, R.color.yellow_trojan);
 
         // initiate and customize toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
@@ -170,15 +178,21 @@ public class CommentViewer extends ActionBarActivity {
         ListView listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(adapter);
 
-        // add listener to the adapter
-        /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getApplicationContext(),
-                        "Click " + PostEditor.this.comments[position].id,
-                        Toast.LENGTH_SHORT).show();
-            }
-        });*/
+        // end refreshing icon once list view is populated
+        if(swipeRefreshLayout.isRefreshing()) {
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            }, spinnerShowTime);
+        }
+    }
 
+    @Override
+    public void onRefresh() {
+        // reload all posts again
+        requestPostAndComments();
     }
 }

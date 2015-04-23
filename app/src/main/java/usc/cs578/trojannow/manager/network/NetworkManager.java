@@ -75,6 +75,14 @@ public class NetworkManager extends IntentService {
                     sendIntent(url, callbackIntent, Url.POST, postParameter);
                     break;
                 }
+                case Method.loginAfterRegister: {
+                    String postParameter = intent.getExtras().getString(Method.parameterKey);
+                    url = Url.login;
+                    callbackIntent = new Intent(Register.class.getSimpleName());
+                    callbackIntent.putExtra(Method.methodKey, methodName);
+                    sendIntent(url, callbackIntent, Url.POST, postParameter);
+                    break;
+                }
                 default: {
                     Log.w(TAG, "method switch falls default case");
                 }

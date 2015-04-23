@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,23 +28,30 @@ import usc.cs578.trojannow.manager.network.Method;
 import usc.cs578.trojannow.manager.network.NetworkManager;
 
 
-public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragmentInteractionListener {
+public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragmentInteractionListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = PostViewer.class.getSimpleName();
+    private static final int spinnerShowTime = 1000;
     private DrawerLayout drawerLayout;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private DrawerMenu drawer;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.post_viewer);
+        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_posts_list);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorSchemeResources(R.color.red_viterbi, R.color.yellow_trojan);
 
         // initiate and customize toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
+        toolbar = (Toolbar) findViewById(R.id.app_bar);
         toolbar.setTitle(getResources().getString(R.string.post_viewer_toolbar_title));
         setSupportActionBar(toolbar);
 
         // set up drawer
-        DrawerMenu drawer = (DrawerMenu) getSupportFragmentManager().findFragmentById(R.id.drawer);
+        drawer = (DrawerMenu) getSupportFragmentManager().findFragmentById(R.id.drawer);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.setUp(R.id.main_view, drawerLayout, toolbar);
 
@@ -52,6 +61,41 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
 
         // request posts by location at launch
         requestPostsByLocation();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+
+        String methodValue = intent.getStringExtra(Method.methodKey);
+        boolean doRefresh = false;
+
+        // automatically refresh to page if login or register is success
+        switch(methodValue) {
+            case Method.loginSuccess: {
+                // rebuild drawer
+                doRefresh = true;
+                break;
+            }
+            case Method.registerSuccess: {
+                doRefresh = true;
+                break;
+            }
+            case Method.logoutSuccess: {
+                doRefresh = true;
+                break;
+            }
+            default: {
+                Log.e(TAG, "onNewIntent falls default case");
+            }
+        }
+
+        if(doRefresh) {
+            drawer.setUp(R.id.main_view, drawerLayout, toolbar);
+            swipeRefreshLayout.setRefreshing(true);
+            requestPostsByLocation();
+        }
     }
 
     @Override
@@ -143,6 +187,17 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
         // bind the adapter to ListView
         ListView listView = (ListView) findViewById(R.id.posts_list);
         listView.setAdapter(adapter);
+
+        // end refreshing icon once list view is populated
+        if(swipeRefreshLayout.isRefreshing()) {
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            }, spinnerShowTime);
+        }
     }
 
     public void requestPostsByLocation() {
@@ -158,4 +213,9 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
 
     }
 
+    @Override
+    public void onRefresh() {
+        // reload all posts again
+        requestPostsByLocation();
+    }
 }
