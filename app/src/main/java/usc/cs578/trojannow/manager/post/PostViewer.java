@@ -125,7 +125,9 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
                     jObj.getString("post_text"),
                     jObj.getString("location"),
                     jObj.getString("post_timestamp"),
-                    jObj.getInt("post_score"));
+                    jObj.getInt("post_score"),
+                    jObj.getInt("reply_count"),
+                    jObj.getInt("user_rating"));
             }
 
         } catch (JSONException e) {

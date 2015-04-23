@@ -127,7 +127,9 @@ public class CommentViewer extends ActionBarActivity {
                 jObj.getString("post_text"),
                 jObj.getString("location"),
                 jObj.getString("post_timestamp"),
-                jObj.getInt("post_score"));
+                jObj.getInt("post_score"),
+                jObj.getInt("reply_count"),
+                jObj.getInt("user_rating"));
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON array " + e.toString());
         }
@@ -150,7 +152,8 @@ public class CommentViewer extends ActionBarActivity {
                     jObj.getString("commentator_name"),
                     jObj.getString("comment_text"),
                     jObj.getString("comment_timestamp"),
-                    jObj.getInt("comment_score"));
+                    jObj.getInt("comment_score"),
+                    jObj.getInt("user_rating"));
             }
 
         } catch (JSONException e) {

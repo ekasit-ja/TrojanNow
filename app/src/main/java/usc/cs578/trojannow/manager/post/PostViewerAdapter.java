@@ -29,6 +29,8 @@ public class PostViewerAdapter extends BaseAdapter {
     private static final int READ_MORE_OFFSET = 11;
     private static final int PAINT_OFFSET = 9;
     private static final String READ_MORE_SUFFIX = "… read more";
+    private static final String REPLY = "reply";
+    private static final String REPLIES = "replies";
     private int PAINT_COLOR;
 
     private Context context;
@@ -136,6 +138,44 @@ public class PostViewerAdapter extends BaseAdapter {
             Log.e(TAG,"Error converting string of post time to date "+e.toString());
         }
         holder.post_timestamp.setText(elapsedTimeText);
+
+        int ratingScore = posts[position].postScore;
+        holder.rating_score.setText(String.valueOf(ratingScore));
+
+        int replyCount = posts[position].replyCount;
+        holder.reply_count.setText(String.valueOf(replyCount));
+
+        if(replyCount == 0) {
+            holder.reply_count.setVisibility(View.GONE);
+            holder.reply_label.setVisibility(View.GONE);
+        }
+        else if(replyCount == 1) {
+            holder.reply_count.setVisibility(View.VISIBLE);
+            holder.reply_label.setVisibility(View.VISIBLE);
+            holder.reply_label.setText(REPLY);
+        }
+        else {
+            holder.reply_count.setVisibility(View.VISIBLE);
+            holder.reply_label.setVisibility(View.VISIBLE);
+            holder.reply_label.setText(REPLIES);
+        }
+
+        // manage rating button color
+        int userRating = posts[position].userRating;
+        if(userRating == 1) {
+            // plus button selected
+            holder.plus_button.setImageResource(R.mipmap.ic_plus_selected);
+            holder.minus_button.setImageResource(R.mipmap.ic_minus);
+        }
+        else if (userRating == -1) {
+            // minus button selected
+            holder.plus_button.setImageResource(R.mipmap.ic_plus);
+            holder.minus_button.setImageResource(R.mipmap.ic_minus_selected);
+        }
+        else {
+            holder.plus_button.setImageResource(R.mipmap.ic_plus);
+            holder.minus_button.setImageResource(R.mipmap.ic_minus);
+        }
 
         // add listener to the row
         final int finalPosition = position;

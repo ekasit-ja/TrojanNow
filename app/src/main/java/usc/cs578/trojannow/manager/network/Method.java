@@ -8,7 +8,6 @@ public class Method {
     public static final String TEMPT_UNITS = "temptUnits";
     public static final int FAHRENHEIT = 0;
     public static final int CELSIUS = 1;
-    public static final String MAC_ADDRESS = "mac_address";
 
     public static final String methodKey = "method";
     public static final String parameterKey = "parameter";

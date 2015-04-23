@@ -99,6 +99,9 @@ public class Register extends ActionBarActivity {
 
             if(jObj.getBoolean(Url.statusKey)) {
                 toastText = "Signing up is successful";
+
+                // auto login
+                doLogin();
             }
             else {
                 toastText = jObj.getString(Url.errorMsgKey);
@@ -130,6 +133,21 @@ public class Register extends ActionBarActivity {
         intent.putExtra(Method.methodKey, Method.registerUser);
         intent.putExtra(Method.parameterKey, parameter);
         startService(intent);
+    }
+
+    public void doLogin() {
+        String email = ((EditText) findViewById(R.id.email)).getText().toString();
+        String password = ((EditText) findViewById(R.id.password)).getText().toString();
+
+        String parameter = Url.emailKey+Url.postAssigner+email+Url.postSeparator;
+        parameter += Url.passwordKey+Url.postAssigner+password+Url.postSeparator;
+
+        // request NetworkManager component to login
+        Intent intent = new Intent(this, NetworkManager.class);
+        intent.putExtra(Method.methodKey, Method.login);
+        intent.putExtra(Method.parameterKey, parameter);
+        startService(intent);
+        finish();
     }
 
 }
