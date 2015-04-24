@@ -112,7 +112,7 @@ public class RestCaller {
                     }
                 }
                 catch(Exception e) {
-                    Log.w(TAG, "Server response has no cookie");
+                    Log.i(TAG, "Server response has no cookie");
                 }
 
                 // read response data

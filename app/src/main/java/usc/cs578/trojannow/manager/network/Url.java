@@ -13,6 +13,10 @@ public class Url {
     public static final String registerUser = host + "/trojannow/registerUser/";
     public static final String forgotPassword = host + "/trojannow/forgotPassword/?email=%s";
     public static final String login = host + "/trojannow/login/";
+    public static final String createComment = host + "/trojannow/createComment/";
+    public static final String createPost = host + "/trojannow/createPost/";
+    public static final String ratePost = host + "/trojannow/ratePost/";
+    public static final String rateComment = host + "/trojannow/rateComment/";
 
     public static final String semicolon = ";";
     public static final String postSeparator = "&";
@@ -23,7 +27,20 @@ public class Url {
     public static final String passwordKey = "password";
     public static final String displayNameKey = "display_name";
     public static final String sessionIdKey = "session_id";
+    public static final String postIdKey = "post_id";
+    public static final String commentTextKey = "comment_text";
 
     public static final String statusKey = "status";
     public static final String errorMsgKey = "error_msg";
+
+    public static final String postTextKey = "post_text";
+    public static final String showNameKey = "show_name";
+    public static final String showLocationKey = "show_location";
+    public static final String showTemptKey = "show_tempt";
+    public static final String locationKey = "location";
+    public static final String temptInCKey = "tempt_in_c";
+
+    public static final String commentIdKey = "comment_id";
+    public static final String ratingScoreKey = "rating_score";
+    public static final String newScoreKey = "new_score";
 }

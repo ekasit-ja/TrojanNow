@@ -10,7 +10,6 @@ import usc.cs578.com.trojannow.R;
  * Created by Ekasit_Ja on 15-Apr-15.
  */
 public class CommentHolder {
-    TextView commentatorName;
     TextView commentText;
     TextView commentTimestamp;
     TextView commentScore;
@@ -18,7 +17,6 @@ public class CommentHolder {
     ImageButton minus_button;
 
     public CommentHolder(View v) {
-        commentatorName = (TextView) v.findViewById(R.id.commentator_name);
         commentText = (TextView) v.findViewById(R.id.comment_text);
         commentTimestamp = (TextView) v.findViewById(R.id.comment_timestamp);
         commentScore = (TextView) v.findViewById(R.id.rating_score);

@@ -26,4 +26,10 @@ public class Method {
     public static final String registerSuccess = "registerSuccess";
     public static final String logoutSuccess = "logoutSuccess";
     public static final String loginAfterRegister = "loginAfterRegister";
+    public static final String createPost = "createPost";
+    public static final String createComment = "createComment";
+    public static final String changeTemptUnit = "changeTemptUnit";
+    public static final String ratePost = "ratePost";
+    public static final String ratePostFromComment = "ratePostFromComment";
+    public static final String rateComment = "rateComment";
 }

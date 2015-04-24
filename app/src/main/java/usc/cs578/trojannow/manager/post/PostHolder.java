@@ -17,6 +17,7 @@ public class PostHolder {
     TextView reply_count;
     TextView reply_label;
     TextView rating_score;
+    TextView tempt_label;
     ImageButton plus_button;
     ImageButton minus_button;
 
@@ -28,6 +29,7 @@ public class PostHolder {
         reply_count = (TextView) v.findViewById(R.id.reply_count);
         reply_label = (TextView) v.findViewById(R.id.reply_label);
         rating_score = (TextView) v.findViewById(R.id.rating_score);
+        tempt_label = (TextView) v.findViewById(R.id.tempt_label);
         plus_button = (ImageButton) v.findViewById(R.id.plus_button);
         minus_button = (ImageButton) v.findViewById(R.id.minus_button);
     }

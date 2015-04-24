@@ -7,6 +7,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import usc.cs578.trojannow.manager.post.CommentViewer;
+import usc.cs578.trojannow.manager.post.PostEditor;
 import usc.cs578.trojannow.manager.post.PostViewer;
 import usc.cs578.trojannow.manager.user.ForgotPassword;
 import usc.cs578.trojannow.manager.user.Login;
@@ -79,6 +80,46 @@ public class NetworkManager extends IntentService {
                     String postParameter = intent.getExtras().getString(Method.parameterKey);
                     url = Url.login;
                     callbackIntent = new Intent(Register.class.getSimpleName());
+                    callbackIntent.putExtra(Method.methodKey, methodName);
+                    sendIntent(url, callbackIntent, Url.POST, postParameter);
+                    break;
+                }
+                case Method.createComment: {
+                    String postParameter = intent.getExtras().getString(Method.parameterKey);
+                    url = Url.createComment;
+                    callbackIntent = new Intent(CommentViewer.class.getSimpleName());
+                    callbackIntent.putExtra(Method.methodKey, methodName);
+                    sendIntent(url, callbackIntent, Url.POST, postParameter);
+                    break;
+                }
+                case Method.createPost: {
+                    String postParameter = intent.getExtras().getString(Method.parameterKey);
+                    url = Url.createPost;
+                    callbackIntent = new Intent(PostEditor.class.getSimpleName());
+                    callbackIntent.putExtra(Method.methodKey, methodName);
+                    sendIntent(url, callbackIntent, Url.POST, postParameter);
+                    break;
+                }
+                case Method.ratePost: {
+                    String postParameter = intent.getExtras().getString(Method.parameterKey);
+                    url = Url.ratePost;
+                    callbackIntent = new Intent(PostViewer.class.getSimpleName());
+                    callbackIntent.putExtra(Method.methodKey, methodName);
+                    sendIntent(url, callbackIntent, Url.POST, postParameter);
+                    break;
+                }
+                case Method.ratePostFromComment: {
+                    String postParameter = intent.getExtras().getString(Method.parameterKey);
+                    url = Url.ratePost;
+                    callbackIntent = new Intent(CommentViewer.class.getSimpleName());
+                    callbackIntent.putExtra(Method.methodKey, methodName);
+                    sendIntent(url, callbackIntent, Url.POST, postParameter);
+                    break;
+                }
+                case Method.rateComment: {
+                    String postParameter = intent.getExtras().getString(Method.parameterKey);
+                    url = Url.rateComment;
+                    callbackIntent = new Intent(CommentViewer.class.getSimpleName());
                     callbackIntent.putExtra(Method.methodKey, methodName);
                     sendIntent(url, callbackIntent, Url.POST, postParameter);
                     break;

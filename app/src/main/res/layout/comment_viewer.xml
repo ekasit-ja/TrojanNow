@@ -62,5 +62,6 @@
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/swipe_posts_list"
         android:background="@drawable/button_flat_style"
+        android:onClick="createComment"
         android:text="@string/comment_button" />
 </RelativeLayout>

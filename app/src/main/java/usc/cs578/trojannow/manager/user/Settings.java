@@ -1,5 +1,6 @@
 package usc.cs578.trojannow.manager.user;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -10,6 +11,7 @@ import android.widget.ImageButton;
 
 import usc.cs578.com.trojannow.R;
 import usc.cs578.trojannow.manager.network.Method;
+import usc.cs578.trojannow.manager.post.PostViewer;
 
 /*
  * Created by Ekasit_Ja on 21-Apr-15.
@@ -19,6 +21,8 @@ public class Settings extends ActionBarActivity {
     private static final String TAG = Settings.class.getSimpleName();
 
     private SharedPreferences settings;
+    private int originalUnit;
+    private int finalUnit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,13 +37,20 @@ public class Settings extends ActionBarActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(originalUnit != finalUnit) {
+                    // directly go to post viewer and close login page automatically
+                    Intent intent = new Intent(Settings.this, PostViewer.class);
+                    intent.putExtra(Method.methodKey, Method.changeTemptUnit);
+                    startActivity(intent);
+                }
                 Settings.this.finish();
             }
         });
 
         // initiate share shared preferences
         settings = getSharedPreferences(Method.PREF_NAME, MODE_PRIVATE);
-        if(settings.getInt(Method.TEMPT_UNITS, Method.FAHRENHEIT) == Method.FAHRENHEIT) {
+        originalUnit = settings.getInt(Method.TEMPT_UNITS, Method.FAHRENHEIT);
+        if(originalUnit == Method.FAHRENHEIT) {
             ImageButton fah_button = (ImageButton) findViewById(R.id.fahrenheit_button);
             fah_button.performClick();
         }
@@ -59,12 +70,14 @@ public class Settings extends ActionBarActivity {
                 fah_button.setImageResource(R.mipmap.ic_fahrenheit_selected);
                 cel_button.setImageResource(R.mipmap.ic_celsius);
                 editor.putInt(Method.TEMPT_UNITS, Method.FAHRENHEIT);
+                finalUnit = Method.FAHRENHEIT;
                 break;
             }
             case R.id.celsius_button: {
                 fah_button.setImageResource(R.mipmap.ic_fahrenheit);
                 cel_button.setImageResource(R.mipmap.ic_celsius_selected);
                 editor.putInt(Method.TEMPT_UNITS, Method.CELSIUS);
+                finalUnit = Method.CELSIUS;
                 break;
             }
             default: {

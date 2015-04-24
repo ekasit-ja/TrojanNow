@@ -12,9 +12,10 @@ public class Post {
     protected int postScore;
     protected int replyCount;
     protected int userRating;
+    protected String tempt_in_c;
 
-    public Post(int id, String posterName, String postText, String location,
-                String postTimestamp, int postScore, int replyCount, int userRating) {
+    public Post(int id, String posterName, String postText, String location, String postTimestamp,
+                int postScore, int replyCount, int userRating, String tempt_in_c) {
         this.id = id;
         this.posterName = posterName;
         this.postText = postText;
@@ -23,6 +24,7 @@ public class Post {
         this.postScore = postScore;
         this.replyCount = replyCount;
         this.userRating = userRating;
+        this.tempt_in_c = tempt_in_c;
     }
 
 }

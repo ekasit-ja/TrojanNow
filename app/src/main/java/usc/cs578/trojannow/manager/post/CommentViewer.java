@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
@@ -22,9 +23,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import usc.cs578.com.trojannow.R;
 import usc.cs578.trojannow.manager.network.Method;
 import usc.cs578.trojannow.manager.network.NetworkManager;
+import usc.cs578.trojannow.manager.network.Url;
 
 /*
  * Created by Ekasit_Ja on 14-Apr-15.
@@ -35,6 +39,10 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
     private static final int spinnerShowTime = 1000;
 
     private SwipeRefreshLayout swipeRefreshLayout;
+    private Post post = null;
+    private ArrayList<Comment> comments = null;
+    private CommentViewerAdapter adapter = null;
+    private ListView listView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +108,23 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
                     case Method.getPostAndComments: {
                         String jsonString = intent.getStringExtra(Method.resultKey);
                         Post post = convertToPost(jsonString);
-                        Comment[] comments = convertToComments(jsonString);
+                        ArrayList<Comment> comments = convertToComments(jsonString);
                         populateListView(post, comments);
+                        break;
+                    }
+                    case Method.createComment: {
+                        String jsonString = intent.getStringExtra(Method.resultKey);
+                        handleCreateComment(jsonString);
+                        break;
+                    }
+                    case Method.ratePostFromComment: {
+                        String jsonString = intent.getStringExtra(Method.resultKey);
+                        handleRatePost(jsonString);
+                        break;
+                    }
+                    case Method.rateComment: {
+                        String jsonString = intent.getStringExtra(Method.resultKey);
+                        handleRateComment(jsonString);
                         break;
                     }
                     default: {
@@ -124,44 +147,42 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
     }
 
     private Post convertToPost(String jsonString) {
-        Post post = null;
         try {
             // convert JSON string to JSON array
             JSONObject jObj = new JSONObject(jsonString).getJSONObject("post");
             // construct post
             post = new Post(
                 jObj.getInt("id"),
-                jObj.getString("poster_name"),
+                jObj.getString("display_name"),
                 jObj.getString("post_text"),
                 jObj.getString("location"),
                 jObj.getString("post_timestamp"),
                 jObj.getInt("post_score"),
                 jObj.getInt("reply_count"),
-                jObj.getInt("user_rating"));
+                jObj.getInt("user_rating"),
+                jObj.getString("tempt_in_c"));
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON array " + e.toString());
         }
         return post;
     }
 
-    private Comment[] convertToComments(String jsonString) {
-        Comment[] comments = null;
+    private ArrayList<Comment> convertToComments(String jsonString) {
         try {
             // convert JSON string to JSON array
             JSONArray jArr = new JSONObject(jsonString).getJSONArray("comment");
-            comments = new Comment[jArr.length()];
+            comments = new ArrayList<>();
 
             // construct element of posts
             for(int i=0; i<jArr.length(); i++) {
                 JSONObject jObj = jArr.getJSONObject(i);
-                comments[i] = new Comment(
+                comments.add( new Comment(
                     jObj.getInt("id"),
                     jObj.getInt("post_id"),
-                    jObj.getString("commentator_name"),
                     jObj.getString("comment_text"),
                     jObj.getString("comment_timestamp"),
                     jObj.getInt("comment_score"),
-                    jObj.getInt("user_rating"));
+                    jObj.getInt("user_rating")) );
             }
 
         } catch (JSONException e) {
@@ -170,12 +191,15 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
         return comments;
     }
 
-    public void populateListView(Post post, Comment[] comments) {
+    public void populateListView(Post post, ArrayList<Comment> comments) {
+        SharedPreferences sharedPreferences = getSharedPreferences(Method.PREF_NAME, MODE_PRIVATE);
+        int tempt_unit = sharedPreferences.getInt(Method.TEMPT_UNITS, Method.FAHRENHEIT);
+
         // create ArrayAdapter to manage data on the view
-        CommentViewerAdapter adapter = new CommentViewerAdapter(this, post, comments);
+        adapter = new CommentViewerAdapter(this, post, comments, tempt_unit);
 
         // bind the adapter to ListView
-        ListView listView = (ListView) findViewById(R.id.listView);
+        listView = (ListView) findViewById(R.id.listView);
         listView.setAdapter(adapter);
 
         // end refreshing icon once list view is populated
@@ -194,5 +218,74 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
     public void onRefresh() {
         // reload all posts again
         requestPostAndComments();
+    }
+
+    public void createComment(View v) {
+        String commenting_text = ((TextView)findViewById(R.id.commenting_text)).getText().toString();
+
+        String postParameter = Url.postIdKey+Url.postAssigner+post.id+Url.postSeparator;
+        postParameter += Url.commentTextKey+Url.postAssigner+commenting_text+Url.postSeparator;
+
+        Intent intent = new Intent(this, NetworkManager.class);
+        intent.putExtra(Method.methodKey, Method.createComment);
+        intent.putExtra(Method.parameterKey,postParameter);
+        startService(intent);
+    }
+
+    private void handleCreateComment(String jsonString) {
+        try {
+            // convert JSON string to JSON array
+            JSONObject jObj = new JSONObject(jsonString);
+            if(jObj.getBoolean(Url.statusKey)) {
+                JSONObject commentObj = jObj.getJSONObject("comment");
+                Comment newComment = new Comment(
+                        commentObj.getInt("id"),
+                        commentObj.getInt("post_id"),
+                        commentObj.getString("comment_text"),
+                        commentObj.getString("comment_timestamp"),
+                        commentObj.getInt("comment_score"),
+                        commentObj.getInt("user_rating"));
+                comments.add(newComment);
+                adapter.notifyDataSetChanged();
+                listView.smoothScrollToPosition(adapter.getCount()-1);
+
+                // remove focus and text from comment text
+                TextView commenting_text = (TextView)findViewById(R.id.commenting_text);
+                commenting_text.setText("");
+            }
+            else {
+                Toast.makeText(this, jObj.getString(Url.errorMsgKey),Toast.LENGTH_LONG).show();
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "Error parsing JSON array " + e.toString());
+        }
+    }
+
+    public void handleRatePost(String jsonString) {
+        try {
+            JSONObject jObj = new JSONObject(jsonString);
+            if(!jObj.getBoolean(Url.statusKey)) {
+                String toastText = jObj.getString(Url.errorMsgKey);
+                Toast.makeText(this, toastText, Toast.LENGTH_LONG).show();
+                adapter.notifyDataSetChanged();
+            }
+
+        } catch (JSONException e) {
+            Log.e(TAG, "Error parsing JSON array " + e.toString());
+        }
+    }
+
+    public void handleRateComment(String jsonString) {
+        try {
+            JSONObject jObj = new JSONObject(jsonString);
+            if(!jObj.getBoolean(Url.statusKey)) {
+                String toastText = jObj.getString(Url.errorMsgKey);
+                Toast.makeText(this, toastText, Toast.LENGTH_LONG).show();
+                adapter.notifyDataSetChanged();
+            }
+
+        } catch (JSONException e) {
+            Log.e(TAG, "Error parsing JSON array " + e.toString());
+        }
     }
 }

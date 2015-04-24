@@ -10,30 +10,47 @@
     android:paddingRight="10dp"
     android:paddingTop="5dp">
 
-    <TextView
-        android:id="@+id/poster_name"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/header_label"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:text="@string/default_poster_name"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/red_viterbi" />
+        android:layout_marginBottom="10dp">
 
-    <TextView
-        android:id="@+id/location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_toEndOf="@id/poster_name"
-        android:text="@string/default_location"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/grey" />
+        <TextView
+            android:id="@+id/poster_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="@string/default_poster_name"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/red_viterbi" />
+
+        <TextView
+            android:id="@+id/tempt_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_toEndOf="@id/poster_name"
+            android:text="@string/default_thermometer_label"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/grey" />
+
+        <TextView
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_toEndOf="@id/tempt_label"
+            android:text="@string/default_location"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/grey" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/post_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/poster_name"
+        android:layout_below="@+id/header_label"
         android:layout_marginBottom="25dp"
         android:text="@string/default_post_text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
