@@ -15,6 +15,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -120,11 +121,19 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
                     case Method.ratePostFromComment: {
                         String jsonString = intent.getStringExtra(Method.resultKey);
                         handleRatePost(jsonString);
+                        requestPostViewerRefresh();
                         break;
                     }
                     case Method.rateComment: {
                         String jsonString = intent.getStringExtra(Method.resultKey);
                         handleRateComment(jsonString);
+                        break;
+                    }
+                    case Method.refreshCommentViewer: {
+                        String jsonString = intent.getStringExtra(Method.resultKey);
+                        Post post = convertToPost(jsonString);
+                        ArrayList<Comment> comments = convertToComments(jsonString);
+                        refreshListView(post, comments);
                         break;
                     }
                     default: {
@@ -233,25 +242,20 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
     }
 
     private void handleCreateComment(String jsonString) {
+        // try to reload page silently
         try {
             // convert JSON string to JSON array
             JSONObject jObj = new JSONObject(jsonString);
             if(jObj.getBoolean(Url.statusKey)) {
                 JSONObject commentObj = jObj.getJSONObject("comment");
-                Comment newComment = new Comment(
-                        commentObj.getInt("id"),
-                        commentObj.getInt("post_id"),
-                        commentObj.getString("comment_text"),
-                        commentObj.getString("comment_timestamp"),
-                        commentObj.getInt("comment_score"),
-                        commentObj.getInt("user_rating"));
-                comments.add(newComment);
-                adapter.notifyDataSetChanged();
-                listView.smoothScrollToPosition(adapter.getCount()-1);
+                int postId = commentObj.getInt("post_id");
 
-                // remove focus and text from comment text
-                TextView commenting_text = (TextView)findViewById(R.id.commenting_text);
-                commenting_text.setText("");
+                Intent intent = new Intent(this, NetworkManager.class);
+                intent.putExtra(Method.methodKey, Method.refreshCommentViewer);
+                intent.putExtra(Method.postIdKey, postId);
+                startService(intent);
+
+                requestPostViewerRefresh();
             }
             else {
                 Toast.makeText(this, jObj.getString(Url.errorMsgKey),Toast.LENGTH_LONG).show();
@@ -259,6 +263,14 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON array " + e.toString());
         }
+    }
+
+    private void refreshListView(Post post, ArrayList<Comment> comments) {
+        adapter.post = post;
+        adapter.comments = comments;
+        adapter.notifyDataSetChanged();
+        listView.smoothScrollToPosition(adapter.getCount()-1);
+        ((EditText)findViewById(R.id.commenting_text)).setText("");
     }
 
     public void handleRatePost(String jsonString) {
@@ -288,4 +300,12 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
             Log.e(TAG, "Error parsing JSON array " + e.toString());
         }
     }
+
+    protected void requestPostViewerRefresh() {
+        Intent intent2 = new Intent(this, NetworkManager.class);
+        intent2.putExtra(Method.methodKey, Method.refreshPostViewer);
+        intent2.putExtra("location", "Los Angeles");
+        startService(intent2);
+    }
+
 }

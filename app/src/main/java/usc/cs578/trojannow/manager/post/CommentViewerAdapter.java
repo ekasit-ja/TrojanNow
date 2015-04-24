@@ -33,8 +33,8 @@ public class CommentViewerAdapter extends BaseAdapter {
     private static final String REPLIES = "replies";
 
     private Context context;
-    private Post post;
-    private ArrayList<Comment> comments;
+    protected Post post;
+    protected ArrayList<Comment> comments;
     private int TEMPT_UNIT;
 
     public CommentViewerAdapter(Context context, Post post, ArrayList<Comment> comments, int TEMPT_UNIT) {
@@ -239,7 +239,7 @@ public class CommentViewerAdapter extends BaseAdapter {
                         }
                         post.userRating = newRating;
                         post.postScore = currentScore+scoreChange;
-                        doRate(TYPE_COMMENT, post.id, newRating, currentScore + scoreChange,
+                        doRate(TYPE_POST, post.id, newRating, currentScore + scoreChange,
                                 final_postHolder.plus_button, final_postHolder.minus_button, final_postHolder.rating_score);
                     }
                 });

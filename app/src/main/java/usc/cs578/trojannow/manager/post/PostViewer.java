@@ -172,6 +172,12 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
                         handleRatePost(jsonString);
                         break;
                     }
+                    case Method.refreshPostViewer: {
+                        String jsonString = intent.getStringExtra(Method.resultKey);
+                        posts = convertToPosts(jsonString);
+                        refreshListView(posts);
+                        break;
+                    }
                     default: {
                         Log.w(TAG, "receive method switch case default");
                     }
@@ -264,6 +270,11 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON array " + e.toString());
         }
+    }
+
+    private void refreshListView(ArrayList<Post> posts) {
+        adapter.posts = posts;
+        adapter.notifyDataSetChanged();
     }
 
 }

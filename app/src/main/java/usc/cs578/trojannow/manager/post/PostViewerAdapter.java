@@ -38,7 +38,7 @@ public class PostViewerAdapter extends BaseAdapter {
     private int PAINT_COLOR;
 
     private Context context;
-    private ArrayList<Post> posts;
+    protected ArrayList<Post> posts;
     private int TEMPT_UNIT;
 
     public PostViewerAdapter(Context context, ArrayList<Post> posts, int tempt_unit) {

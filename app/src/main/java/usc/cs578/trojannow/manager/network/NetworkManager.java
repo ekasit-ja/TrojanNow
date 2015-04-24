@@ -124,6 +124,22 @@ public class NetworkManager extends IntentService {
                     sendIntent(url, callbackIntent, Url.POST, postParameter);
                     break;
                 }
+                case Method.refreshCommentViewer: {
+                    String postId = String.valueOf(intent.getExtras().getInt(Method.postIdKey));
+                    url = String.format(Url.getPostAndCommentsApi, Uri.encode(postId));
+                    callbackIntent = new Intent(CommentViewer.class.getSimpleName());
+                    callbackIntent.putExtra(Method.methodKey, methodName);
+                    sendIntent(url, callbackIntent, Url.GET, "");
+                    break;
+                }
+                case Method.refreshPostViewer: {
+                    String location = intent.getExtras().getString(Method.locationKey);
+                    url = String.format(Url.getPostsByLocationApi, Uri.encode(location));
+                    callbackIntent = new Intent(PostViewer.class.getSimpleName());
+                    callbackIntent.putExtra(Method.methodKey, methodName);
+                    sendIntent(url, callbackIntent, Url.GET, "");
+                    break;
+                }
                 default: {
                     Log.w(TAG, "method switch falls default case");
                 }

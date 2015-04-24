@@ -32,4 +32,6 @@ public class Method {
     public static final String ratePost = "ratePost";
     public static final String ratePostFromComment = "ratePostFromComment";
     public static final String rateComment = "rateComment";
+    public static final String refreshCommentViewer = "refreshCommentViewer";
+    public static final String refreshPostViewer = "refreshPostViewer";
 }
