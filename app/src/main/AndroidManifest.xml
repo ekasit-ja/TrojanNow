@@ -52,6 +52,12 @@
         </activity>
 
         <activity
+            android:name="usc.cs578.trojannow.manager.chat.Chat"
+            android:label="@string/app_name"
+            android:parentActivityName="usc.cs578.trojannow.manager.post.PostViewer" >
+        </activity>
+
+        <activity
             android:name="usc.cs578.trojannow.manager.user.FriendViewer"
             android:label="@string/app_name"
             android:parentActivityName="usc.cs578.trojannow.manager.post.PostViewer" >
@@ -63,6 +69,12 @@
             android:parentActivityName="usc.cs578.trojannow.manager.post.PostViewer"
             android:windowSoftInputMode="stateVisible|adjustResize">
         </activity>
+
+        <receiver android:name="usc.cs578.trojannow.manager.network.NetworkBroadcastListener" >
+            <intent-filter >
+                <action android:name="GET_FRIENDS" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

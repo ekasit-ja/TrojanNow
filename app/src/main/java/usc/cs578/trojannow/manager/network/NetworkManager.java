@@ -3,8 +3,14 @@ package usc.cs578.trojannow.manager.network;
 import android.app.IntentService;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import usc.cs578.trojannow.intents.trojannowIntents;
 
 /*
  * Created by Ekasit_Ja on 13-Apr-15.
@@ -19,6 +25,7 @@ public class NetworkManager extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+
         // get parameters from intent to identify request
         String method = intent.getExtras().getString("method");
         if(method != null) {
@@ -40,6 +47,12 @@ public class NetworkManager extends IntentService {
                     String postId = String.valueOf(intent.getExtras().getInt("postId"));
                     url = String.format(Url.getPostAndCommentsApi, Uri.encode(postId));
                     callbackIntent = new Intent("PostEditor");
+                    sendIntent(url, callbackIntent, method);
+                    break;
+                }
+                case Method.getFriends: {
+                    url = String.format(Url.getFriendsApi);
+                    callbackIntent = new Intent(trojannowIntents.friendsList);
                     sendIntent(url, callbackIntent, method);
                     break;
                 }
@@ -72,6 +85,24 @@ public class NetworkManager extends IntentService {
         }
 
         // send intent to caller
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+    private void sendFriends() {
+        ArrayList<String> list = new ArrayList<String>();
+        list.add("Select Friend...");
+        list.add("Alice Alison");
+        list.add("Bob Builder");
+        list.add("Charlie Chow");
+        list.add("Darren Dean");
+        list.add("Elizabeth Easton");
+        list.add("EIRIK!!!");
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("list", list);
+
+        Intent intent = new Intent("FRIENDS_LIST");
+        intent.putExtras(bundle);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 

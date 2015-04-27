@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import usc.cs578.com.trojannow.R;
+import usc.cs578.trojannow.manager.chat.Chat;
 import usc.cs578.trojannow.manager.user.FriendViewer;
 import usc.cs578.trojannow.manager.user.Login;
 import usc.cs578.trojannow.manager.user.Settings;
@@ -23,6 +24,7 @@ public class DrawerMenuAdapter extends BaseAdapter {
     private static final int ID_LOGIN = 0;
     private static final int ID_SETTINGS = 1;
     private static final int ID_FRIENDS = 2;
+    private static final int ID_CHAT = 3;
 
     private Context context;
     private DrawerLayout drawerLayout;
@@ -33,10 +35,11 @@ public class DrawerMenuAdapter extends BaseAdapter {
         this.drawerLayout = drawerLayout;
 
         // populate menu items
-        drawerMenuItems = new DrawerMenuItem[3];
+        drawerMenuItems = new DrawerMenuItem[4];
         drawerMenuItems[0] = new DrawerMenuItem(ID_LOGIN,"Log in");
         drawerMenuItems[1] = new DrawerMenuItem(ID_SETTINGS,"Settings");
         drawerMenuItems[2] = new DrawerMenuItem(ID_FRIENDS,"Friends");
+        drawerMenuItems[3] = new DrawerMenuItem(ID_CHAT,"Chat");
     }
 
     @Override
@@ -96,6 +99,10 @@ public class DrawerMenuAdapter extends BaseAdapter {
                             }
                             case ID_SETTINGS: {
                                 intent = new Intent(context, Settings.class);
+                                break;
+                            }
+                            case ID_CHAT: {
+                                intent = new Intent(context, Chat.class);
                                 break;
                             }
                             default: {

@@ -6,4 +6,5 @@ package usc.cs578.trojannow.manager.network;
 public class Method {
     public static final String getPostsByLocation = "getPostsByLocation";
     public static final String getPostAndComments = "getPostAndComments";
+    public static final String getFriends = "getFriends";
 }
