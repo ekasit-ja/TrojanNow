@@ -39,11 +39,12 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
     private static final String TAG = CommentViewer.class.getSimpleName();
     private static final int spinnerShowTime = 1000;
 
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private Post post = null;
-    private ArrayList<Comment> comments = null;
-    private CommentViewerAdapter adapter = null;
-    private ListView listView = null;
+    protected SwipeRefreshLayout swipeRefreshLayout;
+    protected Post post = null;
+    protected ArrayList<Comment> comments = null;
+    protected CommentViewerAdapter adapter = null;
+    protected ListView listView = null;
+    protected boolean customLauncher_flag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,6 +149,10 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
     };
 
     public void requestPostAndComments() {
+        // check scroll bottom key
+        customLauncher_flag = getIntent().getBooleanExtra(Method.scrollBottomKey, false);
+        getIntent().removeExtra(Method.scrollBottomKey);
+
         // request NetworkManager component to get data from server
         Intent intent = new Intent(this, NetworkManager.class);
         intent.putExtra(Method.methodKey, Method.getPostAndComments);
@@ -171,7 +176,7 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
                 jObj.getInt("user_rating"),
                 jObj.getString("tempt_in_c"));
         } catch (JSONException e) {
-            Log.e(TAG, "Error parsing JSON array " + e.toString());
+            Log.e(TAG, "Error parsing JSON object " + e.toString());
         }
         return post;
     }
@@ -221,6 +226,11 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
                 }
             }, spinnerShowTime);
         }
+
+        if(customLauncher_flag) {
+            adapter.notifyDataSetChanged();
+            listView.smoothScrollToPosition(adapter.getCount()-1);
+        }
     }
 
     @Override
@@ -261,7 +271,7 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
                 Toast.makeText(this, jObj.getString(Url.errorMsgKey),Toast.LENGTH_LONG).show();
             }
         } catch (JSONException e) {
-            Log.e(TAG, "Error parsing JSON array " + e.toString());
+            Log.e(TAG, "Error parsing JSON object " + e.toString());
         }
     }
 
@@ -283,7 +293,7 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
             }
 
         } catch (JSONException e) {
-            Log.e(TAG, "Error parsing JSON array " + e.toString());
+            Log.e(TAG, "Error parsing JSON object " + e.toString());
         }
     }
 
@@ -297,7 +307,7 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
             }
 
         } catch (JSONException e) {
-            Log.e(TAG, "Error parsing JSON array " + e.toString());
+            Log.e(TAG, "Error parsing JSON object " + e.toString());
         }
     }
 

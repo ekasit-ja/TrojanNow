@@ -21,6 +21,7 @@ import java.util.List;
  */
 public class RestCaller {
 
+    @SuppressWarnings("UnusedDeclaration")
     private static final String TAG = RestCaller.class.getSimpleName();
     private static final int READ_TIMEOUT = 10000; // milliseconds
     private static final int CONNECT_TIMEOUT = 10000; // milliseconds
@@ -112,7 +113,7 @@ public class RestCaller {
                     }
                 }
                 catch(Exception e) {
-                    Log.i(TAG, "Server response has no cookie");
+                    //Log.i(TAG, "Server response has no cookie");
                 }
 
                 // read response data

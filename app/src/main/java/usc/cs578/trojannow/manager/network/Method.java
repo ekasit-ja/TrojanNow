@@ -34,4 +34,13 @@ public class Method {
     public static final String rateComment = "rateComment";
     public static final String refreshCommentViewer = "refreshCommentViewer";
     public static final String refreshPostViewer = "refreshPostViewer";
+    public static final String updateAndroidRegistrationId = "updateAndroidRegistrationId";
+    public static final String gotComment = "gotComment";
+
+    public static final String fromNotificationKey = "fromNotification";
+    public static final String fromNotificationMethodKey = "fromNotificationMethodKey";
+    public static final String scrollBottomKey = "scrollBottom";
+
+    public static final String PROPERTY_REG_ID = "registration_id";
+    public static final String PROPERTY_APP_VERSION = "appVersion";
 }

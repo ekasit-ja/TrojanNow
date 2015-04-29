@@ -17,6 +17,7 @@ public class Url {
     public static final String createPost = host + "/trojannow/createPost/";
     public static final String ratePost = host + "/trojannow/ratePost/";
     public static final String rateComment = host + "/trojannow/rateComment/";
+    public static final String updateAndroidRegistrationId = host + "/trojannow/updateAndroidRegistrationId/";
 
     public static final String semicolon = ";";
     public static final String postSeparator = "&";
@@ -43,4 +44,13 @@ public class Url {
     public static final String commentIdKey = "comment_id";
     public static final String ratingScoreKey = "rating_score";
     public static final String newScoreKey = "new_score";
+
+    public static final String androidRegistrationIdKey = "android_registration_id";
+
+    public static final String notificationTypeKey = "type";
+    public static final String notificationContentKey = "content";
+    public static final String got_comment_type = "got_comment";
+
+    public static final String SENDER_ID = "1026966500088"; // project number
+    public final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 }
