@@ -32,13 +32,16 @@ public class CommentViewerAdapter extends BaseAdapter {
     private static final String REPLY = "reply";
     private static final String REPLIES = "replies";
 
+    protected CommentViewer commentViewer;
     private Context context;
     protected Post post;
     protected ArrayList<Comment> comments;
     private int TEMPT_UNIT;
 
-    public CommentViewerAdapter(Context context, Post post, ArrayList<Comment> comments, int TEMPT_UNIT) {
-        this.context = context;
+
+    public CommentViewerAdapter(CommentViewer commentViewer, Post post, ArrayList<Comment> comments, int TEMPT_UNIT) {
+        this.commentViewer = commentViewer;
+        this.context = commentViewer;
         this.post = post;
         this.comments = comments;
         this.TEMPT_UNIT = TEMPT_UNIT;

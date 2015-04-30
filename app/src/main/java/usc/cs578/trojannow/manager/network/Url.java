@@ -25,6 +25,9 @@ public class Url {
     public static final String ratePost = host + "/trojannow/ratePost/";
     public static final String rateComment = host + "/trojannow/rateComment/";
 
+    public static final String updateAndroidRegistrationId = host + "/trojannow/updateAndroidRegistrationId/";
+
+
     public static final String semicolon = ";";
     public static final String postSeparator = "&";
     public static final String postAssigner = "=";
@@ -56,4 +59,14 @@ public class Url {
     public static final String message = "message";
     public static final String action = "action";
     public static final String userId = "user_id";
+
+    public static final String androidRegistrationIdKey = "android_registration_id";
+
+    public static final String notificationTypeKey = "type";
+    public static final String notificationContentKey = "content";
+    public static final String got_comment_type = "got_comment";
+
+    public static final String SENDER_ID = "1026966500088"; // project number
+    public final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
 }

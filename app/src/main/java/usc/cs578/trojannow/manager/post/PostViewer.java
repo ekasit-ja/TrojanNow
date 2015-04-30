@@ -32,7 +32,6 @@ import usc.cs578.trojannow.manager.network.Method;
 import usc.cs578.trojannow.manager.network.NetworkManager;
 import usc.cs578.trojannow.manager.network.Url;
 
-
 public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragmentInteractionListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = PostViewer.class.getSimpleName();
@@ -68,21 +67,62 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.setUp(R.id.main_view, drawerLayout, toolbar);
 
-        // register this view to receive intent name "PostViewer"
-        LocalBroadcastManager.getInstance(this).registerReceiver(intentReceiver,
-                new IntentFilter(TAG));
+        checkFromNotification();
 
-        // request posts by location at launch
-        requestPostsByLocation();
+        if (NetworkManager.checkPlayServices(this)) {
+            // if there is no android registration id, create new one
+            String regId = NetworkManager.getRegistrationId(this);
+            if (regId.isEmpty()) {
+                NetworkManager.registerInBackground(this);
+            }
+
+            // register this view to receive intent name "PostViewer"
+            LocalBroadcastManager.getInstance(this).registerReceiver(intentReceiver,
+                    new IntentFilter(TAG));
+
+            // request posts by location at launch
+            requestPostsByLocation();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        NetworkManager.checkPlayServices(PostViewer.this);
+    }
+
+    private void checkFromNotification() {
+        Intent i = getIntent();
+        boolean fromNotification = i.getBooleanExtra(Method.fromNotificationKey, false);
+
+        if(fromNotification) {
+            switch(i.getStringExtra(Method.fromNotificationMethodKey)) {
+                case Method.gotComment: {
+                    int postId = getIntent().getIntExtra(Method.postIdKey, -1);
+                    Intent intent = new Intent(this, CommentViewer.class);
+                    intent.putExtra(Method.postIdKey, postId);
+                    intent.putExtra(Method.scrollBottomKey, true);
+                    startActivity(intent);
+                    getIntent().removeExtra(Method.fromNotificationKey);
+                    getIntent().removeExtra(Method.fromNotificationMethodKey);
+                    getIntent().removeExtra(Method.postIdKey);
+                    break;
+                }
+                default: {
+                    Log.w(TAG, "checkFromNotification falls default case");
+                }
+            }
+        }
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        setIntent(intent);
+        checkFromNotification();
 
         String methodValue = intent.getStringExtra(Method.methodKey);
         if(methodValue != null) {
-            setIntent(intent);
             boolean doRefresh = false;
 
             // automatically refresh to page if login or register is success

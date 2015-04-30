@@ -94,6 +94,12 @@ public class Login extends ActionBarActivity {
         try {
             JSONObject jObj = new JSONObject(jsonString);
             if(jObj.getBoolean(Url.statusKey)) {
+
+                //save android registration id into server
+                if (NetworkManager.checkPlayServices(Login.this)) {
+                    NetworkManager.registerInBackground(Login.this);
+                }
+
                 // request post viewer to refresh page
                 Intent intent = new Intent(this, PostViewer.class);
                 intent.putExtra(Method.methodKey, Method.loginSuccess);

@@ -12,7 +12,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import usc.cs578.com.trojannow.R;
+
 import usc.cs578.trojannow.manager.chat.Chat;
+
 import usc.cs578.trojannow.manager.network.Method;
 import usc.cs578.trojannow.manager.network.Url;
 import usc.cs578.trojannow.manager.post.PostViewer;
@@ -52,6 +54,7 @@ public class DrawerMenuAdapter extends BaseAdapter {
             drawerMenuItems[1] = new DrawerMenuItem(ID_SETTINGS, "Settings");
             drawerMenuItems[2] = new DrawerMenuItem(ID_CHAT,"Chat");
             drawerMenuItems[3] = new DrawerMenuItem(ID_LOGOUT, "Sign out");
+
         }
         else {
             // not log in

@@ -16,6 +16,7 @@ public class Method {
     public static final String statusKey = "status";
     public static final String resultKey = "result";
     public static final String emailKey = "email";
+
     public static final String usersKey = "users";
     public static final String userIdKey = "userId";
 
@@ -44,4 +45,14 @@ public class Method {
 
     public static final String getUsers = "getUsers";
     public static final String updateFriend = "updateFriend";
+
+    public static final String updateAndroidRegistrationId = "updateAndroidRegistrationId";
+    public static final String gotComment = "gotComment";
+
+    public static final String fromNotificationKey = "fromNotification";
+    public static final String fromNotificationMethodKey = "fromNotificationMethodKey";
+    public static final String scrollBottomKey = "scrollBottom";
+
+    public static final String PROPERTY_REG_ID = "registration_id";
+    public static final String PROPERTY_APP_VERSION = "appVersion";
 }
