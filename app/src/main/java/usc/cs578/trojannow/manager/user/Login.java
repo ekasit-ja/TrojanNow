@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -98,6 +99,12 @@ public class Login extends ActionBarActivity {
                 if (NetworkManager.checkPlayServices(Login.this)) {
                     NetworkManager.registerInBackground(Login.this);
                 }
+
+				// save display name
+				SharedPreferences sharedPreferences = getSharedPreferences(Method.PREF_NAME, MODE_PRIVATE);
+				SharedPreferences.Editor editor = sharedPreferences.edit();
+				editor.putString(Url.displayNameKey, jObj.getString(Url.displayNameKey));
+				editor.apply();
 
                 // request post viewer to refresh page
                 Intent intent = new Intent(this, PostViewer.class);

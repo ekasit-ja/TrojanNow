@@ -13,6 +13,7 @@ public class Url {
     public static final String registerUser = host + "/trojannow/registerUser/";
     public static final String forgotPassword = host + "/trojannow/forgotPassword/?email=%s";
     public static final String login = host + "/trojannow/login/";
+	public static final String logout = host + "/trojannow/logout/";
     public static final String createComment = host + "/trojannow/createComment/";
     public static final String createPost = host + "/trojannow/createPost/";
     public static final String ratePost = host + "/trojannow/ratePost/";

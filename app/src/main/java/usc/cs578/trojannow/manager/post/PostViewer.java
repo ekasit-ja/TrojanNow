@@ -38,14 +38,17 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
 
     private static final String TAG = PostViewer.class.getSimpleName();
     private static final int spinnerShowTime = 1000;
-    private DrawerLayout drawerLayout;
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private DrawerMenu drawer;
-    private Toolbar toolbar;
-    private SharedPreferences sharedPreferences;
-    private int tempt_unit;
-    private ArrayList<Post> posts = null;
-    private PostViewerAdapter adapter;
+    protected DrawerLayout drawerLayout;
+	protected SwipeRefreshLayout swipeRefreshLayout;
+	protected DrawerMenu drawer;
+	protected Toolbar toolbar;
+	protected SharedPreferences sharedPreferences;
+	protected ArrayList<Post> posts = null;
+	protected PostViewerAdapter adapter;
+
+	// default variables when users log in
+	protected String DISPLAY_NAME;
+	protected int PREF_TEMPT_UNIT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,11 +60,15 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
 
         // get preferences tempt unit
         sharedPreferences = getSharedPreferences(Method.PREF_NAME, MODE_PRIVATE);
-        tempt_unit = sharedPreferences.getInt(Method.TEMPT_UNITS, Method.FAHRENHEIT);
+        PREF_TEMPT_UNIT = sharedPreferences.getInt(Method.TEMPT_UNITS, Method.FAHRENHEIT);
+		String sessionId = sharedPreferences.getString(Url.sessionIdKey, "");
+		if (sessionId != null && !sessionId.equals("")) {
+			DISPLAY_NAME = sharedPreferences.getString(Url.displayNameKey, "");
+		}
 
         // initiate and customize toolbar
         toolbar = (Toolbar) findViewById(R.id.app_bar);
-        toolbar.setTitle(getResources().getString(R.string.post_viewer_toolbar_title));
+        toolbar.setTitle(getString(R.string.post_viewer_toolbar_title));
         setSupportActionBar(toolbar);
 
         // set up drawer
@@ -138,10 +145,6 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
                     doRefresh = true;
                     break;
                 }
-                case Method.logoutSuccess: {
-                    doRefresh = true;
-                    break;
-                }
                 case Method.createPost: {
                     doRefresh = true;
                     break;
@@ -159,8 +162,6 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
                 drawer.setUp(R.id.main_view, drawerLayout, toolbar);
                 swipeRefreshLayout.setRefreshing(true);
                 onRefresh();
-
-
             }
         }
     }
@@ -202,24 +203,26 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
             // Get extra data included in the Intent
             if(intent.getBooleanExtra(Method.statusKey, false)) {
                 String methodName = intent.getStringExtra(Method.methodKey);
+				String jsonString = intent.getStringExtra(Method.resultKey);
                 switch (methodName) {
                     case Method.getPostsByLocation: {
-                        String jsonString = intent.getStringExtra(Method.resultKey);
                         posts = convertToPosts(jsonString);
                         populateListView(posts);
                         break;
                     }
                     case Method.ratePost: {
-                        String jsonString = intent.getStringExtra(Method.resultKey);
                         handleRatePost(jsonString);
                         break;
                     }
                     case Method.refreshPostViewer: {
-                        String jsonString = intent.getStringExtra(Method.resultKey);
                         posts = convertToPosts(jsonString);
                         refreshListView(posts);
                         break;
                     }
+					case Method.logout: {
+						handleLogout(jsonString);
+						break;
+					}
                     default: {
                         Log.w(TAG, "receive method switch case default");
                     }
@@ -231,7 +234,29 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
         }
     };
 
-    private ArrayList<Post> convertToPosts(String jsonString) {
+	private void handleLogout(String jsonString) {
+		try {
+			JSONObject jObj = new JSONObject(jsonString);
+			if(jObj.getBoolean(Url.statusKey)) {
+				SharedPreferences.Editor editor = sharedPreferences.edit();
+				editor.remove(Url.displayNameKey);
+				editor.remove(Url.sessionIdKey);
+				editor.apply();
+
+				// refresh page
+				drawer.setUp(R.id.main_view, drawerLayout, toolbar);
+				swipeRefreshLayout.setRefreshing(true);
+				onRefresh();
+			}
+			else {
+				Toast.makeText(this,jObj.getString(Url.errorMsgKey),Toast.LENGTH_LONG).show();
+			}
+		} catch (JSONException e) {
+			Log.e(TAG, "Error parsing JSON object: " + e.toString());
+		}
+	}
+
+	private ArrayList<Post> convertToPosts(String jsonString) {
         posts = null;
         try {
             // convert JSON string to JSON array
@@ -261,7 +286,7 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
 
     public void populateListView(ArrayList<Post> posts) {
         // create ArrayAdapter to manage data on the view
-        adapter = new PostViewerAdapter(this, posts, tempt_unit);
+        adapter = new PostViewerAdapter(this, posts, PREF_TEMPT_UNIT);
 
         // bind the adapter to ListView
         ListView listView = (ListView) findViewById(R.id.posts_list);
@@ -294,7 +319,7 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
 
     @Override
     public void onRefresh() {
-        tempt_unit = sharedPreferences.getInt(Method.TEMPT_UNITS, Method.FAHRENHEIT);
+        PREF_TEMPT_UNIT = sharedPreferences.getInt(Method.TEMPT_UNITS, Method.FAHRENHEIT);
 
         // reload all posts again
         requestPostsByLocation();

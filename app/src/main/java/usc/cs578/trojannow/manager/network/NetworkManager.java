@@ -154,6 +154,13 @@ public class NetworkManager extends IntentService {
                     sendIntent(url, callbackIntent, Url.GET, "");
                     break;
                 }
+				case Method.logout: {
+					url = Url.logout;
+					callbackIntent = new Intent(PostViewer.class.getSimpleName());
+					callbackIntent.putExtra(Method.methodKey, methodName);
+					sendIntent(url, callbackIntent, Url.POST, "");
+					break;
+				}
                 default: {
                     Log.w(TAG, "method switch falls default case");
                 }

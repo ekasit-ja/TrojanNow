@@ -9,9 +9,9 @@ import usc.cs578.com.trojannow.R;
  * Created by Ekasit_Ja on 17-Apr-15.
  */
 public class DrawerMenuItemHolder {
-    protected TextView menuItem;
+	protected TextView menuItem;
 
-    public DrawerMenuItemHolder(View v) {
-        menuItem = (TextView) v.findViewById(R.id.menu_item);
-    }
+	public DrawerMenuItemHolder(View v) {
+		menuItem = (TextView) v.findViewById(R.id.menu_item);
+	}
 }

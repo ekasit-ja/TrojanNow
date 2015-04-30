@@ -40,6 +40,7 @@ public class PostEditor extends ActionBarActivity {
     private String location = "";
     private String tempt_in_c = "";
     private int tempt_unit;
+	protected String display_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,7 @@ public class PostEditor extends ActionBarActivity {
         // check tempt unit
         SharedPreferences sharedPreferences = getSharedPreferences(Method.PREF_NAME, MODE_PRIVATE);
         tempt_unit = sharedPreferences.getInt(Method.TEMPT_UNITS, Method.FAHRENHEIT);
+		display_name = sharedPreferences.getString(Url.displayNameKey, "");
         String session_id = sharedPreferences.getString(Url.sessionIdKey, "");
 
         // remove name button if user doesn't login
@@ -196,6 +198,8 @@ public class PostEditor extends ActionBarActivity {
         selectName = !selectName;
         ImageButton imgBtn = (ImageButton) v.findViewById(R.id.name_button);
         TextView name_label = (TextView) findViewById(R.id.name_label);
+		name_label.setText(display_name);
+
         if(selectName) {
             imgBtn.setImageResource(R.mipmap.ic_name_selected);
             name_label.setVisibility(View.VISIBLE);
