@@ -7,36 +7,52 @@
     android:paddingRight="10dp"
     android:paddingTop="5dp">
 
-    <TextView
-        android:id="@+id/poster_name"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/header_label"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:paddingBottom="5dp"
-        android:text="@string/default_poster_name"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/red_viterbi" />
+        android:layout_marginBottom="5dp">
 
-    <TextView
-        android:id="@+id/location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/post_text"
-        android:layout_toEndOf="@+id/poster_name"
-        android:paddingBottom="5dp"
-        android:paddingEnd="0dp"
-        android:paddingStart="10dp"
-        android:text="@string/default_location"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/grey" />
+        <TextView
+            android:id="@+id/poster_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="10dp"
+            android:text="@string/default_poster_name"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/red_viterbi" />
+
+        <TextView
+            android:id="@+id/tempt_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_toEndOf="@+id/poster_name"
+            android:paddingBottom="5dp"
+            android:text="@string/default_thermometer_label"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/grey" />
+
+        <TextView
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_toEndOf="@+id/tempt_label"
+            android:paddingBottom="5dp"
+            android:text="@string/default_location"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/grey" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/post_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/poster_name"
+        android:layout_below="@+id/header_label"
         android:layout_marginBottom="25dp"
         android:ellipsize="end"
         android:maxLines="7"

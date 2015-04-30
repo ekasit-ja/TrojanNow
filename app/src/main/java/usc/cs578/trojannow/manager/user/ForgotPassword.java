@@ -10,17 +10,19 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import usc.cs578.com.trojannow.R;
 import usc.cs578.trojannow.manager.network.Method;
+import usc.cs578.trojannow.manager.network.NetworkManager;
 
 /*
  * Created by Ekasit_Ja on 17-Apr-15.
  */
 public class ForgotPassword extends ActionBarActivity {
 
-    private static final String TAG = "ForgotPassword";
+    private static final String TAG = ForgotPassword.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,13 +58,17 @@ public class ForgotPassword extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get extra data included in the Intent
-            if(intent.getBooleanExtra("status", false)) {
-                String method = intent.getStringExtra("method");
+            if(intent.getBooleanExtra(Method.statusKey, false)) {
+                String method = intent.getStringExtra(Method.methodKey);
                 switch (method) {
-                    case Method.getPostsByLocation: {
-                        String jsonString = intent.getStringExtra("result");
-                        /*Post[] posts = convertToPosts(jsonString);
-                        populateListView(posts);*/
+                    case Method.forgotPassword: {
+                        // inform user that help is sent
+                        Toast.makeText(getApplicationContext(),
+                                getString(R.string.send_help_toast),
+                                Toast.LENGTH_SHORT).show();
+
+                        // terminate this activity
+                        finish();
                         break;
                     }
                     default: {
@@ -77,13 +83,13 @@ public class ForgotPassword extends ActionBarActivity {
     };
 
     public void sendHelp(View v) {
-        // inform user that help is sent
-        Toast.makeText(getApplicationContext(),
-                getString(R.string.send_help_toast),
-                Toast.LENGTH_SHORT).show();
+        String email = ((TextView) findViewById(R.id.email)).getText().toString().trim();
 
-        // terminate this activity
-        finish();
+        // request NetworkManager component to register new user
+        Intent intent = new Intent(this, NetworkManager.class);
+        intent.putExtra(Method.methodKey, Method.forgotPassword);
+        intent.putExtra(Method.emailKey, email);
+        startService(intent);
     }
 
 }

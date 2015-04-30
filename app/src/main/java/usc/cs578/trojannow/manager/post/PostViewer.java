@@ -4,9 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,34 +18,53 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import usc.cs578.trojannow.drawer.DrawerMenu;
 import usc.cs578.com.trojannow.R;
 import usc.cs578.trojannow.manager.network.Method;
 import usc.cs578.trojannow.manager.network.NetworkManager;
+import usc.cs578.trojannow.manager.network.Url;
 
 
-public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragmentInteractionListener {
+public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragmentInteractionListener, SwipeRefreshLayout.OnRefreshListener {
 
-    private static final String TAG = "PostViewer";
+    private static final String TAG = PostViewer.class.getSimpleName();
+    private static final int spinnerShowTime = 1000;
     private DrawerLayout drawerLayout;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private DrawerMenu drawer;
+    private Toolbar toolbar;
+    private SharedPreferences sharedPreferences;
+    private int tempt_unit;
+    private ArrayList<Post> posts = null;
+    private PostViewerAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.post_viewer);
+        swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_posts_list);
+        swipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout.setColorSchemeResources(R.color.red_viterbi, R.color.yellow_trojan);
+
+        // get preferences tempt unit
+        sharedPreferences = getSharedPreferences(Method.PREF_NAME, MODE_PRIVATE);
+        tempt_unit = sharedPreferences.getInt(Method.TEMPT_UNITS, Method.FAHRENHEIT);
 
         // initiate and customize toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
+        toolbar = (Toolbar) findViewById(R.id.app_bar);
         toolbar.setTitle(getResources().getString(R.string.post_viewer_toolbar_title));
         setSupportActionBar(toolbar);
 
         // set up drawer
-        DrawerMenu drawer = (DrawerMenu) getSupportFragmentManager().findFragmentById(R.id.drawer);
+        drawer = (DrawerMenu) getSupportFragmentManager().findFragmentById(R.id.drawer);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.setUp(R.id.main_view, drawerLayout, toolbar);
 
@@ -52,6 +74,53 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
 
         // request posts by location at launch
         requestPostsByLocation();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        String methodValue = intent.getStringExtra(Method.methodKey);
+        if(methodValue != null) {
+            setIntent(intent);
+            boolean doRefresh = false;
+
+            // automatically refresh to page if login or register is success
+            switch (methodValue) {
+                case Method.loginSuccess: {
+                    // rebuild drawer
+                    doRefresh = true;
+                    break;
+                }
+                case Method.registerSuccess: {
+                    doRefresh = true;
+                    break;
+                }
+                case Method.logoutSuccess: {
+                    doRefresh = true;
+                    break;
+                }
+                case Method.createPost: {
+                    doRefresh = true;
+                    break;
+                }
+                case Method.changeTemptUnit: {
+                    doRefresh = true;
+                    break;
+                }
+                default: {
+                    Log.e(TAG, "onNewIntent falls default case");
+                }
+            }
+
+            if (doRefresh) {
+                drawer.setUp(R.id.main_view, drawerLayout, toolbar);
+                swipeRefreshLayout.setRefreshing(true);
+                onRefresh();
+
+
+            }
+        }
     }
 
     @Override
@@ -89,13 +158,24 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get extra data included in the Intent
-            if(intent.getBooleanExtra("status", false)) {
-                String method = intent.getStringExtra("method");
-                switch (method) {
+            if(intent.getBooleanExtra(Method.statusKey, false)) {
+                String methodName = intent.getStringExtra(Method.methodKey);
+                switch (methodName) {
                     case Method.getPostsByLocation: {
-                        String jsonString = intent.getStringExtra("result");
-                        Post[] posts = convertToPosts(jsonString);
+                        String jsonString = intent.getStringExtra(Method.resultKey);
+                        posts = convertToPosts(jsonString);
                         populateListView(posts);
+                        break;
+                    }
+                    case Method.ratePost: {
+                        String jsonString = intent.getStringExtra(Method.resultKey);
+                        handleRatePost(jsonString);
+                        break;
+                    }
+                    case Method.refreshPostViewer: {
+                        String jsonString = intent.getStringExtra(Method.resultKey);
+                        posts = convertToPosts(jsonString);
+                        refreshListView(posts);
                         break;
                     }
                     default: {
@@ -109,23 +189,26 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
         }
     };
 
-    private Post[] convertToPosts(String jsonString) {
-        Post[] posts = null;
+    private ArrayList<Post> convertToPosts(String jsonString) {
+        posts = null;
         try {
             // convert JSON string to JSON array
             JSONArray jArr = new JSONArray(jsonString);
-            posts = new Post[jArr.length()];
+            posts = new ArrayList<>();
 
             // construct element of posts
             for(int i=0; i<jArr.length(); i++) {
                 JSONObject jObj = jArr.getJSONObject(i);
-                posts[i] = new Post(
+                posts.add( new Post(
                     jObj.getInt("id"),
-                    jObj.getString("poster_name"),
+                    jObj.getString("display_name"),
                     jObj.getString("post_text"),
                     jObj.getString("location"),
                     jObj.getString("post_timestamp"),
-                    jObj.getInt("post_score"));
+                    jObj.getInt("post_score"),
+                    jObj.getInt("reply_count"),
+                    jObj.getInt("user_rating"),
+                    jObj.getString("tempt_in_c")) );
             }
 
         } catch (JSONException e) {
@@ -134,19 +217,30 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
         return posts;
     }
 
-    public void populateListView(Post[] posts) {
+    public void populateListView(ArrayList<Post> posts) {
         // create ArrayAdapter to manage data on the view
-        PostViewerAdapter adapter = new PostViewerAdapter(this,posts);
+        adapter = new PostViewerAdapter(this, posts, tempt_unit);
 
         // bind the adapter to ListView
         ListView listView = (ListView) findViewById(R.id.posts_list);
         listView.setAdapter(adapter);
+
+        // end refreshing icon once list view is populated
+        if(swipeRefreshLayout.isRefreshing()) {
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            }, spinnerShowTime);
+        }
     }
 
     public void requestPostsByLocation() {
         // request NetworkManager component to get data from server
         Intent intent = new Intent(this, NetworkManager.class);
-        intent.putExtra("method", Method.getPostsByLocation);
+        intent.putExtra(Method.methodKey, Method.getPostsByLocation);
         intent.putExtra("location", "Los Angeles");
         startService(intent);
     }
@@ -154,6 +248,33 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public void onRefresh() {
+        tempt_unit = sharedPreferences.getInt(Method.TEMPT_UNITS, Method.FAHRENHEIT);
+
+        // reload all posts again
+        requestPostsByLocation();
+    }
+
+    private void handleRatePost(String jsonString) {
+        try {
+            JSONObject jObj = new JSONObject(jsonString);
+            if(!jObj.getBoolean(Url.statusKey)) {
+                String toastText = jObj.getString(Url.errorMsgKey);
+                Toast.makeText(this, toastText, Toast.LENGTH_LONG).show();
+                adapter.notifyDataSetChanged();
+            }
+
+        } catch (JSONException e) {
+            Log.e(TAG, "Error parsing JSON array " + e.toString());
+        }
+    }
+
+    private void refreshListView(ArrayList<Post> posts) {
+        adapter.posts = posts;
+        adapter.notifyDataSetChanged();
     }
 
 }

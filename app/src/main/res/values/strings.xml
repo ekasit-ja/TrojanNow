@@ -62,6 +62,7 @@
     <string name="register_toolbar_title">"Welcome to Trojan Now!"</string>
     <string name="hint_confirm_password">"Confirm your password"</string>
     <string name="hint_display_name">"Name (Your displayed name)"</string>
+    <string name="password_not_same">"Entered passwords are not the same"</string>
 
     <!--String for settings-->
     <string name="settings_toolbar_title">"Settings"</string>
@@ -74,6 +75,8 @@
     <string name="friends_search_title">"Search your friends"</string>
     <string name="hint_search_friend">"Enter your friend's name"</string>
     <string name="friend_default_name">"John Jones"</string>
+    <string name="friend_separator">"Friends"</string>
+    <string name="user_separator">"Other Users"</string>
 
 
     <string name="title_section1">Section 1</string>
