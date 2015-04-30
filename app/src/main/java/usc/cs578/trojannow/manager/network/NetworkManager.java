@@ -178,6 +178,7 @@ public class NetworkManager extends IntentService {
                             Url.userId + '=' + friendId;
                     url = Url.updateFriendApi;
                     sendRequest(url, Url.POST, postParameter);
+					break;
                 }
                 case Method.getUsers: {
                     String users = intent.getStringExtra(Method.usersKey);
@@ -205,6 +206,7 @@ public class NetworkManager extends IntentService {
                     url = String.format(Url.getUnreadMessagesApi, Uri.encode(fromUser));
                     callbackIntent = new Intent(trojannowIntents.chatMessages);
                     sendIntent(url, callbackIntent, Url.GET, "");
+					break;
                 }
                 case Method.logout: {
 					url = Url.logout;
