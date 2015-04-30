@@ -148,8 +148,8 @@ public class DrawerMenuAdapter extends BaseAdapter {
 
     private void doLogout() {
         // notify post viewer to refresh page
-        Intent intent = new Intent(context, PostViewer.class);
-        intent.putExtra(Method.methodKey, Method.loginSuccess);
-        context.startActivity(intent);
+        Intent intent = new Intent(context, NetworkManager.class);
+        intent.putExtra(Method.methodKey, Method.logout);
+        context.startService(intent);
     }
 }
