@@ -8,6 +8,16 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+
+import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
+
+import java.util.ArrayList;
+
+import usc.cs578.trojannow.intents.trojannowIntents;
+import usc.cs578.trojannow.manager.chat.Chat;
+
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -40,6 +50,7 @@ public class NetworkManager extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+
         // get parameters from intent to identify request
         String methodName = intent.getExtras().getString(Method.methodKey);
         if(methodName != null) {
@@ -154,7 +165,48 @@ public class NetworkManager extends IntentService {
                     sendIntent(url, callbackIntent, Url.GET, "");
                     break;
                 }
-				case Method.logout: {
+//                case Method.getFriends: {
+//                    url = String.format(Url.getFriendsApi);
+//                    callbackIntent = new Intent(trojannowIntents.friendsList);
+//                    sendIntent(url, callbackIntent, Url.GET, "");
+//                    break;
+//                }
+                case Method.updateFriend: {
+                    String parameter = String.valueOf(intent.getExtras().getString(Method.parameterKey));
+                    String friendId = String.valueOf(intent.getExtras().getInt(Method.userIdKey));
+                    String postParameter = Url.action + '=' + parameter + '&' +
+                            Url.userId + '=' + friendId;
+                    url = Url.updateFriendApi;
+                    sendRequest(url, Url.POST, postParameter);
+                }
+                case Method.getUsers: {
+                    String users = intent.getStringExtra(Method.usersKey);
+
+                    if (users != null) {
+                        url = String.format(Url.getUsersApi, Uri.encode(users));
+                        callbackIntent = new Intent(trojannowIntents.friendsList);
+                        callbackIntent.putExtra(Method.methodKey, trojannowIntents.friendsList);
+                        sendIntent(url, callbackIntent, Url.GET, "");
+                    }
+
+                    break;
+                }
+                case Method.sendMessage: {
+                    String toUser = String.valueOf(intent.getExtras().getInt(Url.toUser));
+                    String message = String.valueOf(intent.getExtras().getString(Url.message));
+                    String postParameter = Url.toUser + '=' + toUser + '&' +
+                                           Url.message + '=' + message;
+                    url = Url.sendMessageApi;
+                    sendRequest(url, Url.POST, postParameter);
+                    break;
+                }
+                case Method.getUnreadMessages: {
+                    String fromUser = String.valueOf(intent.getExtras().getInt(Url.fromUser));
+                    url = String.format(Url.getUnreadMessagesApi, Uri.encode(fromUser));
+                    callbackIntent = new Intent(trojannowIntents.chatMessages);
+                    sendIntent(url, callbackIntent, Url.GET, "");
+                }
+                case Method.logout: {
 					url = Url.logout;
 					callbackIntent = new Intent(PostViewer.class.getSimpleName());
 					callbackIntent.putExtra(Method.methodKey, methodName);
@@ -171,9 +223,8 @@ public class NetworkManager extends IntentService {
         }
     }
 
-    private void sendIntent(String url, Intent callbackIntent, String httpMethod, String postParameter) {
-        String jsonString;
-
+    private String sendRequest(String url, String httpMethod, String postParameter){
+        String jsonString = null;
         try {
             // make a request to get response
             if(httpMethod.equals(Url.GET)) {
@@ -182,15 +233,23 @@ public class NetworkManager extends IntentService {
             else {
                 jsonString = new RestCaller().callServer(this, url, Url.POST, postParameter);
             }
-
-            // set value of intent
-            callbackIntent.putExtra(Method.statusKey, true);
-            callbackIntent.putExtra(Method.resultKey, jsonString);
         }
         catch (Exception e) {
             Log.e(TAG, "Error calling restGetMethod" + e.toString());
-            // set value of intent
+        }
+
+        return jsonString;
+    }
+
+    private void sendIntent(String url, Intent callbackIntent, String httpMethod, String postParameter) {
+        String jsonString = sendRequest(url, httpMethod, postParameter);
+
+        if (jsonString == null) {
             callbackIntent.putExtra(Method.statusKey, false);
+        } else {
+            // set value of intent
+            callbackIntent.putExtra(Method.statusKey, true);
+            callbackIntent.putExtra(Method.resultKey, jsonString);
         }
 
         // send intent to caller
@@ -298,5 +357,4 @@ public class NetworkManager extends IntentService {
         editor.putInt(Method.PROPERTY_APP_VERSION, appVersion);
         editor.apply();
     }
-
 }

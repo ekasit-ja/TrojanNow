@@ -226,7 +226,6 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
                 }
             }, spinnerShowTime);
         }
-
         if(customLauncher_flag) {
             adapter.notifyDataSetChanged();
             listView.smoothScrollToPosition(adapter.getCount()-1);

@@ -38,6 +38,7 @@ public class CommentViewerAdapter extends BaseAdapter {
     protected ArrayList<Comment> comments;
     private int TEMPT_UNIT;
 
+
     public CommentViewerAdapter(CommentViewer commentViewer, Post post, ArrayList<Comment> comments, int TEMPT_UNIT) {
         this.commentViewer = commentViewer;
         this.context = commentViewer;

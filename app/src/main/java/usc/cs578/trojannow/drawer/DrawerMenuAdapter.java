@@ -12,6 +12,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import usc.cs578.com.trojannow.R;
+
+import usc.cs578.trojannow.manager.chat.Chat;
+
 import usc.cs578.trojannow.manager.network.Method;
 import usc.cs578.trojannow.manager.network.NetworkManager;
 import usc.cs578.trojannow.manager.network.Url;
@@ -24,120 +27,129 @@ import usc.cs578.trojannow.manager.user.Settings;
  * Created by Ekasit_Ja on 17-Apr-15.
  */
 public class DrawerMenuAdapter extends BaseAdapter {
-	private static final String TAG = "DrawerMenuAdapter";
-	private static final int ID_LOGIN = 0;
-	private static final int ID_SETTINGS = 1;
-	private static final int ID_FRIENDS = 2;
-	private static final int ID_LOGOUT = 3;
+    private static final String TAG = "DrawerMenuAdapter";
+    private static final int ID_LOGIN = 0;
+    private static final int ID_SETTINGS = 1;
+    private static final int ID_FRIENDS = 2;
+    private static final int ID_CHAT = 3;
+    private static final int ID_LOGOUT = 4;
 
-	private Context context;
-	private DrawerLayout drawerLayout;
-	private DrawerMenuItem[] drawerMenuItems;
-	private SharedPreferences sharedPreferences;
+    private Context context;
+    private DrawerLayout drawerLayout;
+    private DrawerMenuItem[] drawerMenuItems;
+    private SharedPreferences sharedPreferences;
 
-	public DrawerMenuAdapter(Context context, DrawerLayout drawerLayout) {
-		this.context = context;
-		this.drawerLayout = drawerLayout;
+    public DrawerMenuAdapter(Context context, DrawerLayout drawerLayout) {
+        this.context = context;
+        this.drawerLayout = drawerLayout;
 
-		// check login
-		sharedPreferences = context.getSharedPreferences(Method.PREF_NAME, Context.MODE_PRIVATE);
-		String sessionId = sharedPreferences.getString(Url.sessionIdKey, "");
+        // check login
+        sharedPreferences = context.getSharedPreferences(Method.PREF_NAME, Context.MODE_PRIVATE);
+        String sessionId = sharedPreferences.getString(Url.sessionIdKey, "");
 
-		// populate menu items
-		if (sessionId.length() > 0) {
-			// already log in
-			drawerMenuItems = new DrawerMenuItem[3];
-			drawerMenuItems[0] = new DrawerMenuItem(ID_FRIENDS, "Friends");
-			drawerMenuItems[1] = new DrawerMenuItem(ID_SETTINGS, "Settings");
-			drawerMenuItems[2] = new DrawerMenuItem(ID_LOGOUT, "Sign out");
-		} else {
-			// not log in
-			drawerMenuItems = new DrawerMenuItem[2];
-			drawerMenuItems[0] = new DrawerMenuItem(ID_LOGIN, "Sign in");
-			drawerMenuItems[1] = new DrawerMenuItem(ID_SETTINGS, "Settings");
-		}
-	}
+        // populate menu items
+        if(sessionId.length() > 0) {
+            // already log in
+            drawerMenuItems = new DrawerMenuItem[4];
+            drawerMenuItems[0] = new DrawerMenuItem(ID_FRIENDS, "Friends");
+            drawerMenuItems[1] = new DrawerMenuItem(ID_SETTINGS, "Settings");
+            drawerMenuItems[2] = new DrawerMenuItem(ID_CHAT,"Chat");
+            drawerMenuItems[3] = new DrawerMenuItem(ID_LOGOUT, "Sign out");
 
-	@Override
-	public int getCount() {
-		return drawerMenuItems.length;
-	}
+        }
+        else {
+            // not log in
+            drawerMenuItems = new DrawerMenuItem[2];
+            drawerMenuItems[0] = new DrawerMenuItem(ID_LOGIN, "Sign in");
+            drawerMenuItems[1] = new DrawerMenuItem(ID_SETTINGS, "Settings");
+        }
+    }
 
-	@Override
-	public Object getItem(int position) {
-		return drawerMenuItems[position];
-	}
+    @Override
+    public int getCount() {
+        return drawerMenuItems.length;
+    }
 
-	@Override
-	public long getItemId(int position) {
-		return position;
-	}
+    @Override
+    public Object getItem(int position) {
+        return drawerMenuItems[position];
+    }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		View row = convertView;
-		DrawerMenuItemHolder holder;
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
-		// build view holder style to recycling view object in order to improve performance
-		if (row == null) {
-			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			row = inflater.inflate(R.layout.menu_item_in_drawer, parent, false);
-			holder = new DrawerMenuItemHolder(row);
-			row.setTag(holder);
-		} else {
-			holder = (DrawerMenuItemHolder) row.getTag();
-		}
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View row = convertView;
+        DrawerMenuItemHolder holder;
 
-		holder.menuItem.setText(drawerMenuItems[position].content);
+        // build view holder style to recycling view object in order to improve performance
+        if(row == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            row = inflater.inflate(R.layout.menu_item_in_drawer, parent, false);
+            holder = new DrawerMenuItemHolder(row);
+            row.setTag(holder);
+        }
+        else {
+            holder = (DrawerMenuItemHolder) row.getTag();
+        }
 
-		// add listener to the row
-		final int finalPosition = position;
-		row.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				drawerLayout.closeDrawers();
+        holder.menuItem.setText(drawerMenuItems[position].content);
 
-				// // send intent to initiate activity post editor after closing drawer 300ms
-				final Handler handler = new Handler();
-				handler.postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						Intent intent;
-						switch (drawerMenuItems[finalPosition].id) {
-							case ID_LOGIN: {
-								intent = new Intent(context, Login.class);
-								break;
-							}
-							case ID_FRIENDS: {
-								intent = new Intent(context, FriendViewer.class);
-								break;
-							}
-							case ID_SETTINGS: {
-								intent = new Intent(context, Settings.class);
-								break;
-							}
-							case ID_LOGOUT: {
-								doLogout();
-								return;
-							}
-							default: {
-								Log.w(TAG, "Drawer menu falls case default");
-								return;
-							}
-						}
-						context.startActivity(intent);
-					}
-				}, 300);
-			}
-		});
+        // add listener to the row
+        final int finalPosition = position;
+        row.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.closeDrawers();
 
-		return row;
-	}
+                // // send intent to initiate activity post editor after closing drawer 300ms
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent;
+                        switch (drawerMenuItems[finalPosition].id) {
+                            case ID_LOGIN: {
+                                intent = new Intent(context, Login.class);
+                                break;
+                            }
+                            case ID_FRIENDS: {
+                                intent = new Intent(context, FriendViewer.class);
+                                break;
+                            }
+                            case ID_SETTINGS: {
+                                intent = new Intent(context, Settings.class);
+                                break;
+                            }
+                            case ID_CHAT: {
+                                intent = new Intent(context, Chat.class);
+                                break;
+                            }
+                            case ID_LOGOUT: {
+                                doLogout();
+                                return;
+                            }
+                            default: {
+                                Log.w(TAG, "Drawer menu falls case default");
+                                return;
+                            }
+                        }
+                        context.startActivity(intent);
+                    }
+                }, 300);
+            }
+        });
 
-	private void doLogout() {
-		// set intent logout to server
-		Intent logoutIntent = new Intent(context, NetworkManager.class);
-		logoutIntent.putExtra(Method.methodKey, Method.logout);
-		context.startService(logoutIntent);
-	}
+        return row;
+    }
+
+    private void doLogout() {
+        // notify post viewer to refresh page
+        Intent intent = new Intent(context, PostViewer.class);
+        intent.putExtra(Method.methodKey, Method.loginSuccess);
+        context.startActivity(intent);
+    }
 }

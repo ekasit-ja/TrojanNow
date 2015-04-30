@@ -17,8 +17,16 @@ public class Method {
     public static final String resultKey = "result";
     public static final String emailKey = "email";
 
+    public static final String usersKey = "users";
+    public static final String userIdKey = "userId";
+
     public static final String getPostsByLocation = "getPostsByLocation";
     public static final String getPostAndComments = "getPostAndComments";
+
+    public static final String getFriends = "getFriends";
+    public static final String sendMessage = "sendMessage";
+    public static final String getUnreadMessages = "getUnreadMessages";
+
     public static final String registerUser = "registerUser";
     public static final String forgotPassword = "forgotPassword";
     public static final String login = "login";
@@ -35,6 +43,10 @@ public class Method {
     public static final String rateComment = "rateComment";
     public static final String refreshCommentViewer = "refreshCommentViewer";
     public static final String refreshPostViewer = "refreshPostViewer";
+
+    public static final String getUsers = "getUsers";
+    public static final String updateFriend = "updateFriend";
+
     public static final String updateAndroidRegistrationId = "updateAndroidRegistrationId";
     public static final String gotComment = "gotComment";
 

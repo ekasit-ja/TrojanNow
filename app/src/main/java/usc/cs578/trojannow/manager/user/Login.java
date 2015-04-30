@@ -95,6 +95,7 @@ public class Login extends ActionBarActivity {
         try {
             JSONObject jObj = new JSONObject(jsonString);
             if(jObj.getBoolean(Url.statusKey)) {
+
                 //save android registration id into server
                 if (NetworkManager.checkPlayServices(Login.this)) {
                     NetworkManager.registerInBackground(Login.this);

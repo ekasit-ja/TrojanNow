@@ -32,8 +32,6 @@ import usc.cs578.trojannow.manager.network.Method;
 import usc.cs578.trojannow.manager.network.NetworkManager;
 import usc.cs578.trojannow.manager.network.Url;
 
-
-
 public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragmentInteractionListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = PostViewer.class.getSimpleName();

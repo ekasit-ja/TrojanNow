@@ -1,5 +1,6 @@
 package usc.cs578.trojannow.manager.user;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,15 +17,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import usc.cs578.com.trojannow.R;
+import usc.cs578.trojannow.intents.trojannowIntents;
 import usc.cs578.trojannow.manager.network.Method;
+import usc.cs578.trojannow.manager.network.NetworkManager;
 
 /*
  * Created by Ekasit_Ja on 17-Apr-15.
  */
 public class FriendViewer extends ActionBarActivity {
+
+    private static Activity activity;
 
     private static final String TAG = Friend.class.getSimpleName();
 
@@ -36,6 +45,8 @@ public class FriendViewer extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.friends);
+
+        activity = this;
 
         // initiate and customize toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
@@ -52,20 +63,28 @@ public class FriendViewer extends ActionBarActivity {
         // register this view to receive intent name "PostViewer"
         LocalBroadcastManager.getInstance(this).registerReceiver(intentReceiver,
                 new IntentFilter(TAG));
+        LocalBroadcastManager.getInstance(this).registerReceiver(intentReceiver,
+                new IntentFilter(trojannowIntents.friendsList));
 
         // request list of our friends
         requestFriendList();
     }
 
     private void requestFriendList() {
-        friends = new ArrayList<>();
-        friends.add(new Friend(0,"Ake"));
-        friends.add(new Friend(1,"Boom"));
-        friends.add(new Friend(2,"Nic"));
-        friends.add(new Friend(3,"John"));
-        friends.add(new Friend(4,"High"));
+        Intent intent = new Intent(this, NetworkManager.class);
+        intent.putExtra(Method.methodKey, Method.getUsers);
+        intent.putExtra(Method.usersKey, "all");
+        startService(intent);
 
-        populateListView();
+
+//        friends = new ArrayList<>();
+//        friends.add(new Friend(12,"Ake", true));
+//        friends.add(new Friend(33,"Boom", true));
+//        friends.add(new Friend(22,"Nic", true));
+//        friends.add(new Friend(4,"John", false));
+//        friends.add(new Friend(5,"High", false));
+//
+//        populateListView();
     }
 
     private void populateListView() {
@@ -150,6 +169,12 @@ public class FriendViewer extends ActionBarActivity {
                         populateListView(posts);*/
                         break;
                     }
+                    case trojannowIntents.friendsList: {
+                        String jsonString = intent.getStringExtra(Method.resultKey);
+                        friends = new ArrayList<>();
+                        Friend.getFriendsFromJSON(jsonString, friends);
+                        populateListView();
+                    }
                     default: {
                         Log.w(TAG, "receive method switch case default");
                     }
@@ -161,4 +186,7 @@ public class FriendViewer extends ActionBarActivity {
         }
     };
 
+    public static void restart() {
+        activity.recreate();
+    }
 }

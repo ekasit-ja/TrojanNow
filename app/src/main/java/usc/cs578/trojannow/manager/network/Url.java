@@ -10,6 +10,13 @@ public class Url {
     public static final String host = "http://kanitsr.cloudapp.net/";
     public static final String getPostsByLocationApi = host + "/trojannow/getPostsByLocation/?location=%s";
     public static final String getPostAndCommentsApi = host + "/trojannow/getPostAndComments/?postId=%s";
+
+    public static final String getFriendsApi = host + "/trojannow/getFriends/";
+    public static final String getUsersApi = host + "/trojannow/getUsers/?users=%s";
+    public static final String updateFriendApi = host + "/trojannow/updateFriend/";
+    public static final String sendMessageApi = host + "/trojannow/sendMessage/";
+    public static final String getUnreadMessagesApi = host + "/trojannow/getUnreadMessages/?fromUser=%s";
+
     public static final String registerUser = host + "/trojannow/registerUser/";
     public static final String forgotPassword = host + "/trojannow/forgotPassword/?email=%s";
     public static final String login = host + "/trojannow/login/";
@@ -18,7 +25,9 @@ public class Url {
     public static final String createPost = host + "/trojannow/createPost/";
     public static final String ratePost = host + "/trojannow/ratePost/";
     public static final String rateComment = host + "/trojannow/rateComment/";
+
     public static final String updateAndroidRegistrationId = host + "/trojannow/updateAndroidRegistrationId/";
+
 
     public static final String semicolon = ";";
     public static final String postSeparator = "&";
@@ -46,6 +55,12 @@ public class Url {
     public static final String ratingScoreKey = "rating_score";
     public static final String newScoreKey = "new_score";
 
+    public static final String fromUser = "from_user";
+    public static final String toUser = "to_user";
+    public static final String message = "message";
+    public static final String action = "action";
+    public static final String userId = "user_id";
+
     public static final String androidRegistrationIdKey = "android_registration_id";
 
     public static final String notificationTypeKey = "type";
@@ -54,4 +69,5 @@ public class Url {
 
     public static final String SENDER_ID = "1026966500088"; // project number
     public final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
 }
