@@ -35,6 +35,7 @@ import usc.cs578.trojannow.manager.post.PostEditor;
 import usc.cs578.trojannow.manager.post.PostViewer;
 import usc.cs578.trojannow.manager.user.ForgotPassword;
 import usc.cs578.trojannow.manager.user.Login;
+import usc.cs578.trojannow.manager.user.Profile;
 import usc.cs578.trojannow.manager.user.Register;
 
 /*
@@ -165,12 +166,6 @@ public class NetworkManager extends IntentService {
                     sendIntent(url, callbackIntent, Url.GET, "");
                     break;
                 }
-//                case Method.getFriends: {
-//                    url = String.format(Url.getFriendsApi);
-//                    callbackIntent = new Intent(trojannowIntents.friendsList);
-//                    sendIntent(url, callbackIntent, Url.GET, "");
-//                    break;
-//                }
                 case Method.updateFriend: {
                     String parameter = String.valueOf(intent.getExtras().getString(Method.parameterKey));
                     String friendId = String.valueOf(intent.getExtras().getInt(Method.userIdKey));
@@ -207,6 +202,14 @@ public class NetworkManager extends IntentService {
                     callbackIntent = new Intent(trojannowIntents.chatMessages);
                     sendIntent(url, callbackIntent, Url.GET, "");
 					break;
+                }
+                case Method.getProfileData: {
+                    String userId = intent.getStringExtra(Method.userIdKey);
+                    url = String.format(Url.getProfileDataApi, Uri.encode(userId));
+                    callbackIntent = new Intent(Profile.class.getSimpleName());
+                    callbackIntent.putExtra(Method.methodKey, Method.profileData);
+                    sendIntent(url, callbackIntent, Url.GET, "");
+                    break;
                 }
                 case Method.logout: {
 					url = Url.logout;

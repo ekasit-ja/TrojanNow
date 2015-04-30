@@ -45,7 +45,7 @@ public class FriendViewerAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
-        FriendHolder holder;
+        final FriendHolder holder;
 
         // build view holder style to recycling view object in order to improve performance
         if(row == null) {
@@ -83,8 +83,19 @@ public class FriendViewerAdapter extends BaseAdapter {
             holder.btn_addfriend.setVisibility(View.VISIBLE);
         }
 
+        row.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, Profile.class);
+                intent.putExtra(Method.userIdKey, friend.getId());
+                context.startActivity(intent);
+            }
+        });
+
         return row;
     }
+
+
 
     private void addFriend(Friend friend) {
         Intent intent = new Intent(this.context, NetworkManager.class);

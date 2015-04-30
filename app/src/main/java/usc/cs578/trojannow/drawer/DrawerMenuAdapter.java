@@ -21,6 +21,7 @@ import usc.cs578.trojannow.manager.network.Url;
 import usc.cs578.trojannow.manager.post.PostViewer;
 import usc.cs578.trojannow.manager.user.FriendViewer;
 import usc.cs578.trojannow.manager.user.Login;
+import usc.cs578.trojannow.manager.user.Profile;
 import usc.cs578.trojannow.manager.user.Settings;
 
 /*
@@ -32,7 +33,8 @@ public class DrawerMenuAdapter extends BaseAdapter {
     private static final int ID_SETTINGS = 1;
     private static final int ID_FRIENDS = 2;
     private static final int ID_CHAT = 3;
-    private static final int ID_LOGOUT = 4;
+    private static final int ID_MYPROFILE = 4;
+    private static final int ID_LOGOUT = 5;
 
     private Context context;
     private DrawerLayout drawerLayout;
@@ -50,11 +52,12 @@ public class DrawerMenuAdapter extends BaseAdapter {
         // populate menu items
         if(sessionId.length() > 0) {
             // already log in
-            drawerMenuItems = new DrawerMenuItem[4];
+            drawerMenuItems = new DrawerMenuItem[5];
             drawerMenuItems[0] = new DrawerMenuItem(ID_FRIENDS, "Friends");
             drawerMenuItems[1] = new DrawerMenuItem(ID_SETTINGS, "Settings");
             drawerMenuItems[2] = new DrawerMenuItem(ID_CHAT,"Chat");
-            drawerMenuItems[3] = new DrawerMenuItem(ID_LOGOUT, "Sign out");
+            drawerMenuItems[3] = new DrawerMenuItem(ID_MYPROFILE,"My Profile");
+            drawerMenuItems[4] = new DrawerMenuItem(ID_LOGOUT, "Sign out");
 
         }
         else {
@@ -126,6 +129,11 @@ public class DrawerMenuAdapter extends BaseAdapter {
                             }
                             case ID_CHAT: {
                                 intent = new Intent(context, Chat.class);
+                                break;
+                            }
+                            case ID_MYPROFILE: {
+                                intent = new Intent(context, Profile.class);
+                                intent.putExtra(Method.userIdKey, "active");
                                 break;
                             }
                             case ID_LOGOUT: {

@@ -56,4 +56,6 @@ public class Method {
 
     public static final String PROPERTY_REG_ID = "registration_id";
     public static final String PROPERTY_APP_VERSION = "appVersion";
+    public static final String getProfileData = "getProfileData";
+    public static final String profileData = "profileData";
 }

@@ -70,4 +70,5 @@ public class Url {
     public static final String SENDER_ID = "1026966500088"; // project number
     public final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
+    public static final String getProfileDataApi = host + "trojannow/getProfile/?user_id=%s";
 }
