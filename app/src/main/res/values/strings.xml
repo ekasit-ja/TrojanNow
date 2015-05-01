@@ -30,7 +30,7 @@
     <string name="prefix_location_label">"at "</string>
     <string name="dash_label">"\u2014"</string>
     <string name="default_location_label">"Loading …"</string>
-    <string name="default_thermometer_label">"80%s"</string>
+    <string name="default_thermometer_label">"Loading …"</string>
     <string name="celsius_suffix">"\u2103"</string>
     <string name="fahrenheit_suffix">"\u2109"</string>
     <string name="warn_post_length">"Post is limited to %s characters"</string>

@@ -40,9 +40,12 @@ public class PostEditor extends ActionBarActivity {
     private boolean selectLocation = false;
     private boolean selectThermometer = false;
     private String location = "";
-    private String tempt_in_c = "";
-    private int tempt_unit;
+    private int tempt_in_c;
+	private int tempt_unit;
 	protected String display_name;
+	private double latitude;
+	private double longitude;
+	private boolean isPosting = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,9 +102,14 @@ public class PostEditor extends ActionBarActivity {
                 new IntentFilter(trojannowIntents.temperature));
 
 		// immediately request for location
-		Intent intent = new Intent(this, tnSensorManager.class);
-		intent.putExtra(Method.methodKey, Method.getCityFromGPS);
-		startService(intent);
+		Intent locationIntent = new Intent(this, tnSensorManager.class);
+		locationIntent.putExtra(Method.methodKey, Method.getCityFromGPS);
+		startService(locationIntent);
+
+		// immediately request for temperature
+		Intent temptLocation = new Intent(this, tnSensorManager.class);
+		temptLocation.putExtra(Method.methodKey, Method.getTemperature);
+		startService(temptLocation);
     }
 
     @Override
@@ -117,7 +125,9 @@ public class PostEditor extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.option_post) {
-            doPost();
+            if(!isPosting) {
+				doPost();
+			}
         }
 
         return true;
@@ -134,6 +144,12 @@ public class PostEditor extends ActionBarActivity {
     private BroadcastReceiver intentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+			if (intent.getAction().equals(trojannowIntents.temperature)) {
+				float t_in_c = Float.parseFloat(intent.getExtras().get("value").toString());
+				setTemperature(t_in_c);
+				return;
+			}
+
             // Get extra data included in the Intent
             if(intent.getBooleanExtra(Method.statusKey, false)) {
                 String method = intent.getStringExtra(Method.methodKey);
@@ -154,11 +170,8 @@ public class PostEditor extends ActionBarActivity {
                 }
             }
             else {
+				isPosting = false;
                 Log.e(TAG, "NetworkManager reply status FALSE");
-            }
-
-            if (intent.getAction().equals(trojannowIntents.temperature)) {
-                setTemperature(Float.parseFloat(intent.getExtras().get("value").toString()));
             }
         }
     };
@@ -170,8 +183,8 @@ public class PostEditor extends ActionBarActivity {
 				this.latitude = jObj.getDouble(Method.latitudeKey);
 				this.longitude = jObj.getDouble(Method.longitudeKey);
 
-				cityLongName = jObj.getString(Method.cityNameKey);
-				((TextView) findViewById(R.id.location_label)).setText(cityLongName);
+				location = jObj.getString(Method.cityNameKey);
+				((TextView) findViewById(R.id.location_label)).setText(location);
 			}
 		} catch(JSONException e) {
 			Log.e(TAG, "Error parsing JSON object "+e.toString());
@@ -183,13 +196,11 @@ public class PostEditor extends ActionBarActivity {
         ImageButton imgBtn = (ImageButton) v.findViewById(R.id.location_button);
         TextView location_label = (TextView) findViewById(R.id.location_label);
         TextView prefix_location = (TextView) findViewById(R.id.prefix_location_label);
-        if(selectLocation) {
+
+		if(selectLocation) {
             imgBtn.setImageResource(R.mipmap.ic_location_selected);
             location_label.setVisibility(View.VISIBLE);
             prefix_location.setVisibility(View.VISIBLE);
-
-            // get location here
-            location = cityLongName;
         }
         else {
             imgBtn.setImageResource(R.mipmap.ic_location);
@@ -204,26 +215,9 @@ public class PostEditor extends ActionBarActivity {
         ImageButton imgBtn = (ImageButton) v.findViewById(R.id.thermometer_button);
         TextView thermometer_label = (TextView) findViewById(R.id.thermometer_label);
 
-        String temptSuffix;
-        if(tempt_unit == Method.FAHRENHEIT) {
-            temptSuffix = getString(R.string.fahrenheit_suffix);
-        }
-        else {
-            temptSuffix = getString(R.string.celsius_suffix);
-        }
-
-        // get location here
-        tempt_in_c = "25%s";
-        tempt_in_c = String.format(tempt_in_c,temptSuffix);
-        thermometer_label.setText(tempt_in_c);
-
         if(selectThermometer) {
             imgBtn.setImageResource(R.mipmap.ic_thermometer_selected);
             thermometer_label.setVisibility(View.VISIBLE);
-
-            Intent intent = new Intent(this, tnSensorManager.class);
-            intent.putExtra(Method.methodKey, Method.getTemperature);
-            startService(intent);
         }
         else {
             imgBtn.setImageResource(R.mipmap.ic_thermometer);
@@ -232,25 +226,25 @@ public class PostEditor extends ActionBarActivity {
         manageText();
     }
 
-    public void setTemperature(float temp) {
-        TextView thermometer_label = (TextView) findViewById(R.id.thermometer_label);
+	public void setTemperature(float temp) {
+		tempt_in_c = (int) temp;
+		TextView thermometer_label = (TextView) findViewById(R.id.thermometer_label);
 
-        String temptSuffix;
-        if(tempt_unit == Method.FAHRENHEIT) {
-            temp = ((temp - 32)*5)/9;
-            temptSuffix = getString(R.string.fahrenheit_suffix);
-        }
-        else {
-            temptSuffix = getString(R.string.celsius_suffix);
-        }
+		String temptSuffix;
+		if(tempt_unit == Method.FAHRENHEIT) {
+			temp = (temp * 9 / 5) + 32;
+			temptSuffix = getString(R.string.fahrenheit_suffix);
+		}
+		else {
+			temptSuffix = getString(R.string.celsius_suffix);
+		}
 
-        // get location here
-        tempt_in_c = temp+"%s";
-        tempt_in_c = String.format(tempt_in_c,temptSuffix);
-        thermometer_label.setText(tempt_in_c);
+		String display_tempt = ((int) temp) + "%s";
+		display_tempt = String.format(display_tempt, temptSuffix);
+		thermometer_label.setText(display_tempt);
 
-        manageText();
-    }
+		manageText();
+	}
 
     public void toggleName(View v) {
         selectName = !selectName;
@@ -296,45 +290,54 @@ public class PostEditor extends ActionBarActivity {
 		boolean finishLoadingLocation = !((TextView) findViewById(R.id.location_label)).
 				getText().toString().equals(getString(R.string.default_location_label));
 
+		boolean finishLoadingTempt = !((TextView) findViewById(R.id.thermometer_label)).
+				getText().toString().equals(getString(R.string.default_thermometer_label));
+
 		if(selectLocation && !finishLoadingLocation) {
 			Toast.makeText(this, "Location is loading, please wait and post again", Toast.LENGTH_LONG).show();
+		}
+		else if(selectThermometer && !finishLoadingTempt) {
+			Toast.makeText(this, "Thermometer is loading, please wait and post again", Toast.LENGTH_LONG).show();
 		}
 		else if(!selectLocation && !finishLoadingLocation) {
 			Toast.makeText(this, "Server is not ready, please wait and post again", Toast.LENGTH_LONG).show();
 		}
 		else {
-        String post_text = ((TextView)findViewById(R.id.post_text)).getText().toString();
-        String tempt_in_c_digit;
-        if(selectThermometer) {
-            tempt_in_c_digit = tempt_in_c.substring(0, tempt_in_c.length() - 1);
-        }
-        else {
-            tempt_in_c_digit = "";
-        }
+			String post_text = ((TextView)findViewById(R.id.post_text)).getText().toString();
+			String tempt_in_c_digit;
+			if(selectThermometer) {
+				tempt_in_c_digit = tempt_in_c+"";
+			}
+			else {
+				tempt_in_c_digit = "";
+			}
 
-        // must have location info in the post
-        if(location.length() < 1) {
-            location = getString(R.string.default_location);
-        }
+			// must have location info in the post
+			if(location.length() < 1) {
+				location = getString(R.string.default_location);
+			}
 
-        int show_name = selectName? 1: 0;
-        int show_tempt = selectThermometer? 1: 0;
-        int show_location = selectLocation? 1: 0;
+			int show_name = selectName? 1: 0;
+			int show_tempt = selectThermometer? 1: 0;
+			int show_location = selectLocation? 1: 0;
 
-        String parameter = Url.postTextKey+Url.postAssigner+post_text+Url.postSeparator;
-        parameter += Url.showNameKey+Url.postAssigner+show_name+Url.postSeparator;
-        parameter += Url.showLocationKey+Url.postAssigner+show_location+Url.postSeparator;
-        parameter += Url.showTemptKey+Url.postAssigner+show_tempt+Url.postSeparator;
-        parameter += Url.locationKey+Url.postAssigner+location+Url.postSeparator;
-        parameter += Url.temptInCKey+Url.postAssigner+tempt_in_c_digit+Url.postSeparator;
-		parameter += Url.latitudeKey + Url.postAssigner + this.latitude + Url.postSeparator;
-		parameter += Url.longitudeKey + Url.postAssigner + this.longitude + Url.postSeparator;
+			String parameter = Url.postTextKey+Url.postAssigner+post_text+Url.postSeparator;
+			parameter += Url.showNameKey+Url.postAssigner+show_name+Url.postSeparator;
+			parameter += Url.showLocationKey+Url.postAssigner+show_location+Url.postSeparator;
+			parameter += Url.showTemptKey+Url.postAssigner+show_tempt+Url.postSeparator;
+			parameter += Url.locationKey+Url.postAssigner+location+Url.postSeparator;
+			parameter += Url.temptInCKey+Url.postAssigner+tempt_in_c_digit+Url.postSeparator;
+			parameter += Url.latitudeKey + Url.postAssigner + this.latitude + Url.postSeparator;
+			parameter += Url.longitudeKey + Url.postAssigner + this.longitude + Url.postSeparator;
 
-        // request NetworkManager component to login
-        Intent intent = new Intent(this, NetworkManager.class);
-        intent.putExtra(Method.methodKey, Method.createPost);
-        intent.putExtra(Method.parameterKey, parameter);
-        startService(intent);
+			// request NetworkManager component to login
+			Intent intent = new Intent(this, NetworkManager.class);
+			intent.putExtra(Method.methodKey, Method.createPost);
+			intent.putExtra(Method.parameterKey, parameter);
+			startService(intent);
+
+			// disable button so user will not send duplicate post
+			isPosting = true;
 		}
     }
 
@@ -354,6 +357,7 @@ public class PostEditor extends ActionBarActivity {
             else {
                 String toastText = jObj.getString(Url.errorMsgKey);
                 Toast.makeText(this, toastText, Toast.LENGTH_LONG).show();
+				isPosting = false;
             }
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON array " + e.toString());
