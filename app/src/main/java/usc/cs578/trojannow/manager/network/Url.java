@@ -56,6 +56,7 @@ public class Url {
     public static final String ratingScoreKey = "rating_score";
     public static final String newScoreKey = "new_score";
 	public static final String fromUserKey = "from_user";
+	public static final String newCommentDataKey = "comment";
 
     public static final String fromUser = "from_user";
     public static final String toUser = "to_user";

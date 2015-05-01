@@ -46,6 +46,7 @@ public class Method {
 	public static final String sendHasSeen = "sendHasSeen";
 	public static final String autoLoadNewMessage = "autoLoadNewMessage";
 	public static final String chatFromNotification = "chatFromNotification";
+	public static final String autoLoadNewComment = "autoLoadNewComment";
 
     public static final String getUsers = "getUsers";
     public static final String updateFriend = "updateFriend";
@@ -58,6 +59,7 @@ public class Method {
     public static final String fromNotificationMethodKey = "fromNotificationMethodKey";
     public static final String scrollBottomKey = "scrollBottom";
 	public static final String fromUserKey = "from_user";
+	public static final String newCommentDataKey = "newCommentData";
 
     public static final String PROPERTY_REG_ID = "registration_id";
     public static final String PROPERTY_APP_VERSION = "appVersion";

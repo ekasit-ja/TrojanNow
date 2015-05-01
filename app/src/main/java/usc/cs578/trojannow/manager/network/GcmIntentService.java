@@ -16,6 +16,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import usc.cs578.com.trojannow.R;
 import usc.cs578.trojannow.manager.chat.Chat;
+import usc.cs578.trojannow.manager.post.CommentViewer;
 import usc.cs578.trojannow.manager.post.PostViewer;
 
 /*
@@ -67,23 +68,31 @@ public class GcmIntentService extends IntentService {
 
 		switch (type) {
 			case Url.got_comment_type: {
-				int post_id = Integer.parseInt(intent.getStringExtra(Url.postIdKey));
-				String content = "Someone comments your post. Check it out!";
+				if(CommentViewer.isActivityVisible()) {
+					Intent callbackIntent = new Intent(CommentViewer.class.getSimpleName());
+					callbackIntent.putExtra(Method.statusKey, true);
+					callbackIntent.putExtra(Method.methodKey, Method.autoLoadNewComment);
+					String newCommentData = intent.getStringExtra(Url.newCommentDataKey);
+					callbackIntent.putExtra(Method.newCommentDataKey, newCommentData);
+					LocalBroadcastManager.getInstance(this).sendBroadcast(callbackIntent);
+				}
+				else {
+					int post_id = Integer.parseInt(intent.getStringExtra(Url.postIdKey));
+					String content = "Someone comments your post. Check it out!";
 
-				Intent custom_intent = new Intent(this, PostViewer.class);
-				custom_intent.putExtra(Method.fromNotificationKey, true);
-				custom_intent.putExtra(Method.fromNotificationMethodKey, Method.gotComment);
-				custom_intent.putExtra(Method.postIdKey, post_id);
+					Intent custom_intent = new Intent(this, PostViewer.class);
+					custom_intent.putExtra(Method.fromNotificationKey, true);
+					custom_intent.putExtra(Method.fromNotificationMethodKey, Method.gotComment);
+					custom_intent.putExtra(Method.postIdKey, post_id);
 
-				sendNotification(content, custom_intent);
-
+					sendNotification(content, custom_intent);
+				}
 				break;
 			}
 			case Url.got_chat_message: {
 				if(Chat.isActivityVisible()) {
 					Intent callbackIntent = new Intent(Method.autoLoadNewMessage);
 					LocalBroadcastManager.getInstance(this).sendBroadcast(callbackIntent);
-					Log.e(TAG, "send");
 				}
 				else {
 					int from_user = Integer.parseInt(intent.getStringExtra(Url.fromUserKey));
