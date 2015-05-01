@@ -29,7 +29,7 @@
     <string name="default_name_label">"Ekasit"</string>
     <string name="prefix_location_label">"at "</string>
     <string name="dash_label">"\u2014"</string>
-    <string name="default_location_label">"Los Angeles"</string>
+    <string name="default_location_label">"Loading …"</string>
     <string name="default_thermometer_label">"80%s"</string>
     <string name="celsius_suffix">"\u2103"</string>
     <string name="fahrenheit_suffix">"\u2109"</string>
