@@ -71,4 +71,5 @@ public class Url {
     public final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     public static final String getProfileDataApi = host + "trojannow/getProfile/?user_id=%s";
+    public static final String updateProfileApi = host + "trojannow/updateProfile/";
 }

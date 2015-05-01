@@ -36,6 +36,7 @@ import usc.cs578.trojannow.manager.post.PostViewer;
 import usc.cs578.trojannow.manager.user.ForgotPassword;
 import usc.cs578.trojannow.manager.user.Login;
 import usc.cs578.trojannow.manager.user.Profile;
+import usc.cs578.trojannow.manager.user.ProfileEditor;
 import usc.cs578.trojannow.manager.user.Register;
 
 /*
@@ -205,10 +206,25 @@ public class NetworkManager extends IntentService {
                 }
                 case Method.getProfileData: {
                     String userId = intent.getStringExtra(Method.userIdKey);
+                    String callBackClass = intent.getStringExtra(Method.TAG);
                     url = String.format(Url.getProfileDataApi, Uri.encode(userId));
-                    callbackIntent = new Intent(Profile.class.getSimpleName());
+                    callbackIntent = new Intent(callBackClass);
                     callbackIntent.putExtra(Method.methodKey, Method.profileData);
                     sendIntent(url, callbackIntent, Url.GET, "");
+                    break;
+                }
+                case Method.updateProfile: {
+                    String age = intent.getStringExtra(Profile.age);
+                    String school = intent.getStringExtra(Profile.school);
+                    String gradYear = intent.getStringExtra(Profile.gradYear);
+                    String about = intent.getStringExtra(Profile.about);
+
+                    String postParameter = "age="+age+"&school="+school+"&gradyear="+gradYear+
+                            "&about="+about;
+
+                    url = Url.updateProfileApi;
+
+                    sendRequest(url, Url.POST, postParameter);
                     break;
                 }
                 case Method.logout: {

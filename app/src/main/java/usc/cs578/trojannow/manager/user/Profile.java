@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -102,13 +103,34 @@ public class Profile extends ActionBarActivity {
         Intent intent = getIntent();
         String userId = intent.getExtras().get(Method.userIdKey).toString();
 
+        if (userId.equals("active")) {
+            enableEdit(true);
+        } else {
+            enableEdit(false);
+        }
+
         getProfileData(userId);
+    }
+
+    private void enableEdit(boolean edit) {
+        Button editBtn = (Button) findViewById(R.id.profile_edit);
+        if (edit) {
+            editBtn.setVisibility(View.VISIBLE);
+        } else {
+            editBtn.setVisibility(View.GONE);
+        }
     }
 
     private void getProfileData(String userId) {
         Intent intent = new Intent(this, NetworkManager.class);
+        intent.putExtra(Method.TAG, TAG);
         intent.putExtra(Method.methodKey, Method.getProfileData);
         intent.putExtra(Method.userIdKey, userId);
         startService(intent);
+    }
+
+    public void onEditBtnClick(View view) {
+        Intent intent = new Intent(this, ProfileEditor.class);
+        startActivity(intent);
     }
 }

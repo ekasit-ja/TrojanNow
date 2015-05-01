@@ -58,4 +58,6 @@ public class Method {
     public static final String PROPERTY_APP_VERSION = "appVersion";
     public static final String getProfileData = "getProfileData";
     public static final String profileData = "profileData";
+    public static final String TAG = "TAG";
+    public static final String updateProfile = "updateProfile";
 }
