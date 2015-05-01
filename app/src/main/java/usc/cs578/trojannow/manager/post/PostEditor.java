@@ -23,9 +23,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import usc.cs578.com.trojannow.R;
+import usc.cs578.trojannow.intents.trojannowIntents;
 import usc.cs578.trojannow.manager.network.Method;
 import usc.cs578.trojannow.manager.network.NetworkManager;
 import usc.cs578.trojannow.manager.network.Url;
+import usc.cs578.trojannow.manager.sensor.tnSensorManager;
 
 /*
  * Created by Ekasit_Ja on 19-Apr-15.
@@ -92,6 +94,8 @@ public class PostEditor extends ActionBarActivity {
         // register this view to receive intent name "PostViewer"
         LocalBroadcastManager.getInstance(this).registerReceiver(intentReceiver,
                 new IntentFilter(TAG));
+        LocalBroadcastManager.getInstance(this).registerReceiver(intentReceiver,
+                new IntentFilter(trojannowIntents.temperature));
     }
 
     @Override
@@ -141,6 +145,10 @@ public class PostEditor extends ActionBarActivity {
             else {
                 Log.e(TAG, "NetworkManager reply status FALSE");
             }
+
+            if (intent.getAction().equals(trojannowIntents.temperature)) {
+                setTemperature(Float.parseFloat(intent.getExtras().get("value").toString()));
+            }
         }
     };
 
@@ -186,11 +194,35 @@ public class PostEditor extends ActionBarActivity {
         if(selectThermometer) {
             imgBtn.setImageResource(R.mipmap.ic_thermometer_selected);
             thermometer_label.setVisibility(View.VISIBLE);
+
+            Intent intent = new Intent(this, tnSensorManager.class);
+            intent.putExtra(Method.methodKey, Method.getTemperature);
+            startService(intent);
         }
         else {
             imgBtn.setImageResource(R.mipmap.ic_thermometer);
             thermometer_label.setVisibility(View.GONE);
         }
+        manageText();
+    }
+
+    public void setTemperature(float temp) {
+        TextView thermometer_label = (TextView) findViewById(R.id.thermometer_label);
+
+        String temptSuffix;
+        if(tempt_unit == Method.FAHRENHEIT) {
+            temp = ((temp - 32)*5)/9;
+            temptSuffix = getString(R.string.fahrenheit_suffix);
+        }
+        else {
+            temptSuffix = getString(R.string.celsius_suffix);
+        }
+
+        // get location here
+        tempt_in_c = temp+"%s";
+        tempt_in_c = String.format(tempt_in_c,temptSuffix);
+        thermometer_label.setText(tempt_in_c);
+
         manageText();
     }
 

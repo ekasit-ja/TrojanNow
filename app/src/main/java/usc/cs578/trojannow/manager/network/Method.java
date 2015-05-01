@@ -67,4 +67,6 @@ public class Method {
     public static final String profileData = "profileData";
     public static final String TAG = "TAG";
     public static final String updateProfile = "updateProfile";
+    public static final String getTemperature = "getTemperature";
+    public static final String getLocation = "getLocation";
 }

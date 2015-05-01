@@ -8,4 +8,6 @@ public class trojannowIntents {
     // Intent containing a list of friends of the logged-in user
     public static final String friendsList = "usc.cs578.trojannow.friendsList";
     public static final String chatMessages = "usc.cs578.trojannow.chatMessages";
+    public static final String temperature = "usc.cs578.trojannow.temperature";
+    public static final String location = "usc.cs578.trojannow.location";
 }
