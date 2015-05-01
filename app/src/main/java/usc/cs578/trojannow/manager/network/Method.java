@@ -20,6 +20,9 @@ public class Method {
     public static final String usersKey = "users";
     public static final String userIdKey = "userId";
 
+	public static final String latitudeKey = "latitude";
+	public static final String longitudeKey = "longitude";
+
     public static final String getPostsByLocation = "getPostsByLocation";
     public static final String getPostAndComments = "getPostAndComments";
 
@@ -47,6 +50,7 @@ public class Method {
 	public static final String autoLoadNewMessage = "autoLoadNewMessage";
 	public static final String chatFromNotification = "chatFromNotification";
 	public static final String autoLoadNewComment = "autoLoadNewComment";
+	public static final String getCityFromGPS = "getCityFromGPS";
 
     public static final String getUsers = "getUsers";
     public static final String updateFriend = "updateFriend";
