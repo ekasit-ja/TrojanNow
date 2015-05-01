@@ -9,18 +9,13 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 
-import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-
-import java.util.ArrayList;
 
 import usc.cs578.trojannow.intents.trojannowIntents;
 import usc.cs578.trojannow.manager.chat.Chat;
 
 import android.os.AsyncTask;
-import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -36,7 +31,6 @@ import usc.cs578.trojannow.manager.post.PostViewer;
 import usc.cs578.trojannow.manager.user.ForgotPassword;
 import usc.cs578.trojannow.manager.user.Login;
 import usc.cs578.trojannow.manager.user.Profile;
-import usc.cs578.trojannow.manager.user.ProfileEditor;
 import usc.cs578.trojannow.manager.user.Register;
 
 /*
@@ -238,19 +232,6 @@ public class NetworkManager extends IntentService {
 							Uri.encode(max_id),
 							Uri.encode(min_id));
 					callbackIntent = new Intent(Chat.class.getSimpleName());
-					sendIntent(url, callbackIntent, Url.GET, "");
-					break;
-				}
-				case Method.getCityFromGPS: {
-					double latitude = intent.getDoubleExtra(Method.latitudeKey, 0);
-					double longitude = intent.getDoubleExtra(Method.longitudeKey, 0);
-					url = String.format(Url.getCityFromGPS,
-							Uri.encode(latitude+""),
-							Uri.encode(longitude+""));
-					callbackIntent = new Intent(PostEditor.class.getSimpleName());
-					callbackIntent.putExtra(Method.methodKey, methodName);
-					//callbackIntent.putExtra(Method.latitudeKey, latitude);
-					//callbackIntent.putExtra(Method.longitudeKey, longitude);
 					sendIntent(url, callbackIntent, Url.GET, "");
 					break;
 				}

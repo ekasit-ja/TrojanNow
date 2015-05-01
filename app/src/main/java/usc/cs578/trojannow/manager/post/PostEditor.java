@@ -5,9 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
@@ -151,11 +148,6 @@ public class PostEditor extends ActionBarActivity {
                     }
 					case Method.getCityFromGPS: {
 						String jsonString = intent.getStringExtra(Method.resultKey);
-
-						Log.e(TAG, jsonString);
-
-						//latitude = intent.getDoubleExtra(Method.latitudeKey, 0);
-						//longitude = intent.getDoubleExtra(Method.longitudeKey, 0);
 						handleGetCityFromGPS(jsonString);
 						break;
 					}
@@ -177,13 +169,12 @@ public class PostEditor extends ActionBarActivity {
 	private void handleGetCityFromGPS(String jsonString) {
 		try {
 			JSONObject jObj = new JSONObject(jsonString);
-			if(jObj.getString("status").equals("OK")) {
-				JSONObject jObj2 = jObj.getJSONArray("results").getJSONObject(0);
-				JSONObject jObj3 = jObj2.getJSONArray("address_components").getJSONObject(4);
-				cityLongName = jObj3.getString("long_name");
-				if(selectLocation) {
-					((TextView) findViewById(R.id.location_label)).setText(cityLongName);
-				}
+			if(jObj.getBoolean(Method.statusKey)) {
+				this.latitude = jObj.getDouble(Method.latitudeKey);
+				this.longitude = jObj.getDouble(Method.longitudeKey);
+
+				cityLongName = jObj.getString(Method.cityNameKey);
+				((TextView) findViewById(R.id.location_label)).setText(cityLongName);
 			}
 		} catch(JSONException e) {
 			Log.e(TAG, "Error parsing JSON object "+e.toString());

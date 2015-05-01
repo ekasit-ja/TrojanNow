@@ -16,6 +16,9 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -23,6 +26,7 @@ import java.util.Locale;
 import usc.cs578.trojannow.intents.trojannowIntents;
 import usc.cs578.trojannow.manager.network.Method;
 import usc.cs578.trojannow.manager.network.NetworkManager;
+import usc.cs578.trojannow.manager.post.PostEditor;
 
 /**
  * Created by echo on 5/1/15.
@@ -34,9 +38,9 @@ public class tnSensorManager extends IntentService {
      * @param name Used to name the worker thread, important only for debugging.
      */
 
+	private static final String TAG = tnSensorManager.class.getSimpleName();
+
     private SensorEventListener eventListener;
-	private double latitude;
-	private double longitude;
 
     public tnSensorManager() {
         super("tnSensorManager");
@@ -118,13 +122,34 @@ public class tnSensorManager extends IntentService {
 	public void getCityNameFromGPS() {
 		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-		this.latitude = location.getLatitude();
-		this.longitude = location.getLongitude();
+		double latitude = location.getLatitude();
+		double longitude = location.getLongitude();
 
-		Intent intent = new Intent(this, NetworkManager.class);
-		intent.putExtra(Method.methodKey, Method.getCityFromGPS);
-		intent.putExtra(Method.latitudeKey, this.latitude);
-		intent.putExtra(Method.longitudeKey, this.longitude);
-		startService(intent);
+		Geocoder gcd = new Geocoder(getApplicationContext(), Locale.getDefault());
+		List<Address> addresses;
+		try {
+			addresses = gcd.getFromLocation(latitude, longitude, 1);
+			if (addresses.size() > 0) {
+				JSONObject jObj = new JSONObject();
+				try {
+					jObj.put(Method.statusKey, true);
+					jObj.put(Method.latitudeKey, latitude);
+					jObj.put(Method.longitudeKey, longitude);
+					jObj.put(Method.cityNameKey, addresses.get(0).getLocality());
+				}
+				catch(JSONException e) {
+					Log.e(TAG, "Error creating JSON object "+e.toString());
+				}
+				Intent callbackIntent = new Intent(PostEditor.class.getSimpleName());
+				callbackIntent.putExtra(Method.statusKey,true);
+				callbackIntent.putExtra(Method.methodKey, Method.getCityFromGPS);
+				callbackIntent.putExtra(Method.resultKey, jObj.toString());
+				LocalBroadcastManager.getInstance(this).sendBroadcast(callbackIntent);
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 }
