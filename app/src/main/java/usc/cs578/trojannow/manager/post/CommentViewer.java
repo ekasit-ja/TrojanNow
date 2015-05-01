@@ -286,7 +286,9 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
     }
 
     public void createComment(View v) {
-        String commenting_text = ((TextView)findViewById(R.id.commenting_text)).getText().toString();
+		EditText et = (EditText) findViewById(R.id.commenting_text);
+        String commenting_text = et.getText().toString();
+		et.setText("");
 
         String postParameter = Url.postIdKey+Url.postAssigner+post.id+Url.postSeparator;
         postParameter += Url.commentTextKey+Url.postAssigner+commenting_text+Url.postSeparator;
