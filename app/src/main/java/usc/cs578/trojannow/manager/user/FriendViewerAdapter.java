@@ -1,12 +1,16 @@
 package usc.cs578.trojannow.manager.user;
 
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -19,11 +23,11 @@ import usc.cs578.trojannow.manager.network.NetworkManager;
  */
 public class FriendViewerAdapter extends BaseAdapter {
 
-    private Context context;
+    private FriendViewer friendViewer;
     private ArrayList<Friend> friends;
 
-    public FriendViewerAdapter(Context context, ArrayList<Friend> friends) {
-        this.context = context;
+    public FriendViewerAdapter(FriendViewer friendViewer, ArrayList<Friend> friends) {
+        this.friendViewer = friendViewer;
         this.friends = friends;
     }
 
@@ -49,7 +53,7 @@ public class FriendViewerAdapter extends BaseAdapter {
 
         // build view holder style to recycling view object in order to improve performance
         if(row == null) {
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater inflater = (LayoutInflater) friendViewer.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             row = inflater.inflate(R.layout.friend_in_search_list, parent, false);
             holder = new FriendHolder(row);
             row.setTag(holder);
@@ -61,17 +65,26 @@ public class FriendViewerAdapter extends BaseAdapter {
 
         holder.friend_name.setText(friend.name);
 
+		final FriendHolder final_holder = holder;
         holder.btn_addfriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addFriend(friend);
+				friend.setIsFriend(true);
+				RelativeLayout parent = (RelativeLayout) v.getParent();
+				parent.findViewById(R.id.btn_addfriend).setVisibility(View.GONE);
+				parent.findViewById(R.id.btn_unfriend).setVisibility(View.VISIBLE);
+				addFriend(friend);
             }
         });
 
         holder.btn_unfriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                removeFriend(friend);
+				friend.setIsFriend(false);
+				RelativeLayout parent = (RelativeLayout) v.getParent();
+				parent.findViewById(R.id.btn_addfriend).setVisibility(View.VISIBLE);
+				parent.findViewById(R.id.btn_unfriend).setVisibility(View.GONE);
+				removeFriend(friend);
             }
         });
 
@@ -87,22 +100,22 @@ public class FriendViewerAdapter extends BaseAdapter {
     }
 
     private void addFriend(Friend friend) {
-        Intent intent = new Intent(this.context, NetworkManager.class);
+        Intent intent = new Intent(this.friendViewer, NetworkManager.class);
         intent.putExtra(Method.methodKey, Method.updateFriend);
         intent.putExtra(Method.parameterKey, "add");
         intent.putExtra(Method.userIdKey, friend.id);
-        this.context.startService(intent);
+        this.friendViewer.startService(intent);
 
-        FriendViewer.restart();
+        friendViewer.updateListView();
     }
 
     private void removeFriend(Friend friend) {
-        Intent intent = new Intent(this.context, NetworkManager.class);
+        Intent intent = new Intent(this.friendViewer, NetworkManager.class);
         intent.putExtra(Method.methodKey, Method.updateFriend);
         intent.putExtra(Method.parameterKey, "remove");
         intent.putExtra(Method.userIdKey, friend.id);
-        this.context.startService(intent);
+        this.friendViewer.startService(intent);
 
-        FriendViewer.restart();
+        friendViewer.updateListView();
     }
 }

@@ -208,6 +208,20 @@ public class NetworkManager extends IntentService {
                     sendIntent(url, callbackIntent, Url.GET, "");
 					break;
                 }
+				case Method.sendHasSeen: {
+					String from_user = intent.getStringExtra("from_user");
+					String to_user = intent.getStringExtra("to_user");
+					String max_id = intent.getStringExtra("max_id");
+					String min_id = intent.getStringExtra("min_id");
+					url = String.format(Url.markUnreadMessages,
+							Uri.encode(from_user),
+							Uri.encode(to_user),
+							Uri.encode(max_id),
+							Uri.encode(min_id));
+					callbackIntent = new Intent(Chat.class.getSimpleName());
+					sendIntent(url, callbackIntent, Url.GET, "");
+					break;
+				}
                 case Method.logout: {
 					url = Url.logout;
 					callbackIntent = new Intent(PostViewer.class.getSimpleName());
@@ -323,7 +337,7 @@ public class NetworkManager extends IntentService {
 
             @Override
             protected void onPostExecute(String s) {
-                Log.e(TAG, s);
+                Log.i(TAG, s);
             }
         }.execute(null, null, null);
     }

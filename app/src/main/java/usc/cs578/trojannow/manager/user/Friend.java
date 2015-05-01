@@ -44,4 +44,8 @@ public class Friend {
     public int getId() {
         return id;
     }
+
+	public void setIsFriend(boolean isFriend) {
+		this.isFriend = isFriend;
+	}
 }

@@ -16,6 +16,7 @@ public class Url {
     public static final String updateFriendApi = host + "/trojannow/updateFriend/";
     public static final String sendMessageApi = host + "/trojannow/sendMessage/";
     public static final String getUnreadMessagesApi = host + "/trojannow/getUnreadMessages/?fromUser=%s";
+	public static final String markUnreadMessages = host + "/trojannow/markUnreadMessages/?from_user=%s&to_user=%s&max_id=%s&min_id=%s";
 
     public static final String registerUser = host + "/trojannow/registerUser/";
     public static final String forgotPassword = host + "/trojannow/forgotPassword/?email=%s";
@@ -54,6 +55,7 @@ public class Url {
     public static final String commentIdKey = "comment_id";
     public static final String ratingScoreKey = "rating_score";
     public static final String newScoreKey = "new_score";
+	public static final String fromUserKey = "from_user";
 
     public static final String fromUser = "from_user";
     public static final String toUser = "to_user";
@@ -66,6 +68,7 @@ public class Url {
     public static final String notificationTypeKey = "type";
     public static final String notificationContentKey = "content";
     public static final String got_comment_type = "got_comment";
+	public static final String got_chat_message = "got_chat_message";
 
     public static final String SENDER_ID = "1026966500088"; // project number
     public final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;

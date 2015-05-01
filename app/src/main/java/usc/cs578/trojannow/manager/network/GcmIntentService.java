@@ -9,11 +9,13 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import usc.cs578.com.trojannow.R;
+import usc.cs578.trojannow.manager.chat.Chat;
 import usc.cs578.trojannow.manager.post.PostViewer;
 
 /*
@@ -75,6 +77,25 @@ public class GcmIntentService extends IntentService {
 
 				sendNotification(content, custom_intent);
 
+				break;
+			}
+			case Url.got_chat_message: {
+				if(Chat.isActivityVisible()) {
+					Intent callbackIntent = new Intent(Method.autoLoadNewMessage);
+					LocalBroadcastManager.getInstance(this).sendBroadcast(callbackIntent);
+					Log.e(TAG, "send");
+				}
+				else {
+					int from_user = Integer.parseInt(intent.getStringExtra(Url.fromUserKey));
+					String content = intent.getStringExtra("content");
+
+					Intent custom_intent = new Intent(this, PostViewer.class);
+					custom_intent.putExtra(Method.fromNotificationKey, true);
+					custom_intent.putExtra(Method.fromNotificationMethodKey, Method.gotChat);
+					custom_intent.putExtra(Method.fromUserKey, from_user);
+
+					sendNotification(content, custom_intent);
+				}
 				break;
 			}
 		}
