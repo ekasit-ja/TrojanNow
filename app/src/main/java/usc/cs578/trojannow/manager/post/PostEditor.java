@@ -94,8 +94,14 @@ public class PostEditor extends ActionBarActivity {
         // register this view to receive intent name "PostViewer"
         LocalBroadcastManager.getInstance(this).registerReceiver(intentReceiver,
                 new IntentFilter(TAG));
+
         LocalBroadcastManager.getInstance(this).registerReceiver(intentReceiver,
                 new IntentFilter(trojannowIntents.temperature));
+
+		// immediately request for location
+		Intent intent = new Intent(this, tnSensorManager.class);
+		intent.putExtra(Method.methodKey, Method.getCityFromGPS);
+		startService(intent);
     }
 
     @Override
@@ -137,6 +143,11 @@ public class PostEditor extends ActionBarActivity {
                         handleCreatePost(jsonString);
                         break;
                     }
+					case Method.getCityFromGPS: {
+						String jsonString = intent.getStringExtra(Method.resultKey);
+						handleGetCityFromGPS(jsonString);
+						break;
+					}
                     default: {
                         Log.w(TAG, "receive method switch case default");
                     }
@@ -152,7 +163,22 @@ public class PostEditor extends ActionBarActivity {
         }
     };
 
-    public void toggleLocation(View v) {
+	private void handleGetCityFromGPS(String jsonString) {
+		try {
+			JSONObject jObj = new JSONObject(jsonString);
+			if(jObj.getBoolean(Method.statusKey)) {
+				this.latitude = jObj.getDouble(Method.latitudeKey);
+				this.longitude = jObj.getDouble(Method.longitudeKey);
+
+				cityLongName = jObj.getString(Method.cityNameKey);
+				((TextView) findViewById(R.id.location_label)).setText(cityLongName);
+			}
+		} catch(JSONException e) {
+			Log.e(TAG, "Error parsing JSON object "+e.toString());
+		}
+	}
+
+	public void toggleLocation(View v) {
         selectLocation = !selectLocation;
         ImageButton imgBtn = (ImageButton) v.findViewById(R.id.location_button);
         TextView location_label = (TextView) findViewById(R.id.location_label);
@@ -163,7 +189,7 @@ public class PostEditor extends ActionBarActivity {
             prefix_location.setVisibility(View.VISIBLE);
 
             // get location here
-            location = getString(R.string.default_location);
+            location = cityLongName;
         }
         else {
             imgBtn.setImageResource(R.mipmap.ic_location);
@@ -267,6 +293,16 @@ public class PostEditor extends ActionBarActivity {
     }
 
     private void doPost() {
+		boolean finishLoadingLocation = !((TextView) findViewById(R.id.location_label)).
+				getText().toString().equals(getString(R.string.default_location_label));
+
+		if(selectLocation && !finishLoadingLocation) {
+			Toast.makeText(this, "Location is loading, please wait and post again", Toast.LENGTH_LONG).show();
+		}
+		else if(!selectLocation && !finishLoadingLocation) {
+			Toast.makeText(this, "Server is not ready, please wait and post again", Toast.LENGTH_LONG).show();
+		}
+		else {
         String post_text = ((TextView)findViewById(R.id.post_text)).getText().toString();
         String tempt_in_c_digit;
         if(selectThermometer) {
@@ -291,12 +327,15 @@ public class PostEditor extends ActionBarActivity {
         parameter += Url.showTemptKey+Url.postAssigner+show_tempt+Url.postSeparator;
         parameter += Url.locationKey+Url.postAssigner+location+Url.postSeparator;
         parameter += Url.temptInCKey+Url.postAssigner+tempt_in_c_digit+Url.postSeparator;
+		parameter += Url.latitudeKey + Url.postAssigner + this.latitude + Url.postSeparator;
+		parameter += Url.longitudeKey + Url.postAssigner + this.longitude + Url.postSeparator;
 
         // request NetworkManager component to login
         Intent intent = new Intent(this, NetworkManager.class);
         intent.putExtra(Method.methodKey, Method.createPost);
         intent.putExtra(Method.parameterKey, parameter);
         startService(intent);
+		}
     }
 
     private void handleCreatePost(String jsonString) {
