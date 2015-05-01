@@ -1,8 +1,14 @@
 package usc.cs578.trojannow.manager.post;
 
-/*
- * Created by Ekasit_Ja on 13-Apr-15.
+/**
+ * PURPOSE:
+ * This class represents a post in the system.
+ *
+ * ARCHITECTURAL MAPPING:
+ * This class maps directly to the Post class in the class diagram.
+ *
  */
+
 public class Post {
     protected int id;
     protected String posterName;

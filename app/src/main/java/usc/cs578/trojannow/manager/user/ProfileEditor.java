@@ -21,8 +21,21 @@ import usc.cs578.trojannow.manager.network.Method;
 import usc.cs578.trojannow.manager.network.NetworkManager;
 
 /**
- * Created by echo on 4/30/15.
+ * PURPOSE:
+ * This class lets the user update her profile information so that other users can see it.
+ *
+ * OPERATION:
+ * This class displays a screen where the user can update her profile information.
+ *
+ * Profile updates are sent via the LocalBroadcastManager and stored in the server,
+ *
+ * ARCHITECTURAL MAPPING:
+ * This class is part of the Profile component in the architectural diagram and maps directly
+ * to the ProfileEditor class in the class diagram.
+ *
+ * Created by Eirik Skogstad.
  */
+
 public class ProfileEditor extends ActionBarActivity {
     private static final String TAG = ProfileEditor.class.getSimpleName();
 

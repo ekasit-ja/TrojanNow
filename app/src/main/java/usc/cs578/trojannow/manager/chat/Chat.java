@@ -32,9 +32,29 @@ import usc.cs578.trojannow.manager.network.NetworkManager;
 import usc.cs578.trojannow.manager.network.Url;
 import usc.cs578.trojannow.manager.user.Friend;
 
-/*
- * Created by echo on 4/22/15.
+/**
+ * PURPOSE:
+ * This class will implement the functionality required to let users send instant messages to their
+ * friends.
+ *
+ * OPERATION:
+ * This class is responsible for displaying the chat screen and handling user
+ * input on this screen. The screen will allow the user to select a friend to chat with,
+ * see chat messages and write chat messages.
+ *
+ * This class will contain a BroadcastReceiver which will register to the LocalBroadcastManager
+ * to receive chat messages from other users. Chat messages from the current user will be distributed
+ * by the LocalBroadcastManager to other components.
+ *
+ * Since all chat communication goes through the server, the NetworkManager will be responsible
+ * for passing messages to the server and distributing the messages coming from the server.
+ *
+ * ARCHITECTURAL MAPPING:
+ * The Chat class maps directly to the Chat Client component in the architectural diagram and the
+ * ChatClient class in the class diagram.
+ *
  */
+
 public class Chat extends ActionBarActivity implements AdapterView.OnItemSelectedListener {
 
 	private static final String TAG = Chat.class.getSimpleName();

@@ -13,7 +13,15 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.support.v4.content.LocalBroadcastManager;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 import java.util.Locale;
 
@@ -80,6 +88,19 @@ public class tnSensorManager extends IntentService {
             };
 
             sensorManager.registerListener(eventListener, tempSensor, SensorManager.SENSOR_DELAY_FASTEST);
+        } else {
+            String temp = null;
+            try {
+                temp = getTempFromWeb("Los Angeles");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            float temperature = Float.parseFloat(temp);
+
+            Intent intent = new Intent(trojannowIntents.temperature);
+            intent.putExtra("value", temperature);
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
         }
     }
 
@@ -103,5 +124,64 @@ public class tnSensorManager extends IntentService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String getAddress() {
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        double lat = location.getLatitude();
+        double lng = location.getLongitude();
+
+        Geocoder gcd = new Geocoder(getApplicationContext(), Locale.getDefault());
+        List<Address> addresses = null;
+        try {
+            addresses = gcd.getFromLocation(lat, lng, 1);
+
+            if (addresses.size() > 0) {
+                return addresses.get(0).getLocality();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return "";
+    }
+
+    private String  getTempFromWeb(String string) throws Exception {
+        string = string.replace(" ", "%20");
+
+        URL url = null;
+        URLConnection conec = null;
+        InputStream stream = null;
+        XmlPullParser xpp = null;
+
+        String queryString = "http://api.wunderground.com/auto/wui/geo/WXCurrentObXML/index.xml?query=" + string;
+        try {
+            url = new URL(queryString);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        conec = url.openConnection();
+        stream = conec.getInputStream();
+        try {
+            xpp = XmlPullParserFactory.newInstance().newPullParser();
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        }
+        xpp.setInput(stream, null);
+        int eventType = xpp.getEventType();
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            if (eventType == XmlPullParser.START_TAG) {
+                String elementName = xpp.getName();
+                if ("temp_c".equals(elementName)) {
+                    return xpp.nextText();
+                }
+            }
+            eventType = xpp.next();
+        }
+
+        return "";
     }
 }

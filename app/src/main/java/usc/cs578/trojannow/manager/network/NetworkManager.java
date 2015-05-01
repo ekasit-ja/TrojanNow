@@ -39,9 +39,22 @@ import usc.cs578.trojannow.manager.user.Profile;
 import usc.cs578.trojannow.manager.user.ProfileEditor;
 import usc.cs578.trojannow.manager.user.Register;
 
-/*
- * Created by Ekasit_Ja on 13-Apr-15.
+/**
+ * PURPOSE:
+ * This class is responsible for communicating with the server, and make sure event messages are
+ * passed between the client and the server.
+ *
+ * OPERATION:
+ * This class will listen for events from components and send them to the server. It will also poll event messages
+ * from the server and distribute them to the components. For this it will use the BroadcastReceiver and
+ * LocalBroadcastManager.
+ *
+ * ARCHITECTURAL MAPPING:
+ * This class maps directly to the Client Network Manager component in the architectural diagram and to the
+ * CNetworkManager class in the class diagram.
+ *
  */
+
 public class NetworkManager extends IntentService {
 
     private static final String TAG = NetworkManager.class.getSimpleName();

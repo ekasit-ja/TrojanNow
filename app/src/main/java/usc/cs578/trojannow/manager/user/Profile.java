@@ -21,8 +21,20 @@ import usc.cs578.trojannow.manager.network.Method;
 import usc.cs578.trojannow.manager.network.NetworkManager;
 
 /**
- * Created by echo on 4/30/15.
+ * PURPOSE:
+ * This class allows the user to view other users profiles.
+ *
+ * OPERATION:
+ * This class displays a screen where the user can search for another user
+ * and view her profile.
+ *
+ * ARCHITECTURAL MAPPING:
+ * This class is part of the Profile component in the architectural diagram and maps directly
+ * to the ProfileViewer class in the class diagram.
+ *
+ * Created by echo on 3/29/15.
  */
+
 public class Profile extends ActionBarActivity {
     private static final String TAG = Profile.class.getSimpleName();
 

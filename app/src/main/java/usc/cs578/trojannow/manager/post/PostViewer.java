@@ -33,6 +33,19 @@ import usc.cs578.trojannow.manager.network.Method;
 import usc.cs578.trojannow.manager.network.NetworkManager;
 import usc.cs578.trojannow.manager.network.Url;
 
+/**
+ * PURPOSE:
+ * This class enables the user to view posts from other users.
+ *
+ * OPERATION:
+ * This class presents a screen which lists posts.
+ *
+ * ARCHITECTURAL MAPPING:
+ * This class is part of the Client Post Manager component in the architectural diagram and maps directly to
+ * the PostViewer class in the class diagram.
+ *
+ */
+
 public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragmentInteractionListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = PostViewer.class.getSimpleName();
