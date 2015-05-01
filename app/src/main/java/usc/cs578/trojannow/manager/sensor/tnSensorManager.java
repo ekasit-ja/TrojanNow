@@ -10,8 +10,11 @@ import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,6 +22,7 @@ import java.util.Locale;
 
 import usc.cs578.trojannow.intents.trojannowIntents;
 import usc.cs578.trojannow.manager.network.Method;
+import usc.cs578.trojannow.manager.network.NetworkManager;
 
 /**
  * Created by echo on 5/1/15.
@@ -31,6 +35,8 @@ public class tnSensorManager extends IntentService {
      */
 
     private SensorEventListener eventListener;
+	private double latitude;
+	private double longitude;
 
     public tnSensorManager() {
         super("tnSensorManager");
@@ -51,6 +57,10 @@ public class tnSensorManager extends IntentService {
                     getLocation();
                     break;
                 }
+				case Method.getCityFromGPS: {
+					getCityNameFromGPS();
+					break;
+				}
             }
         }
     }
@@ -104,4 +114,17 @@ public class tnSensorManager extends IntentService {
             e.printStackTrace();
         }
     }
+
+	public void getCityNameFromGPS() {
+		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		this.latitude = location.getLatitude();
+		this.longitude = location.getLongitude();
+
+		Intent intent = new Intent(this, NetworkManager.class);
+		intent.putExtra(Method.methodKey, Method.getCityFromGPS);
+		intent.putExtra(Method.latitudeKey, this.latitude);
+		intent.putExtra(Method.longitudeKey, this.longitude);
+		startService(intent);
+	}
 }

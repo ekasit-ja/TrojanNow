@@ -35,7 +35,7 @@ import usc.cs578.trojannow.manager.sensor.tnSensorManager;
 /*
  * Created by Ekasit_Ja on 19-Apr-15.
  */
-public class PostEditor extends ActionBarActivity implements LocationListener {
+public class PostEditor extends ActionBarActivity {
 
     private static final String TAG = PostEditor.class.getSimpleName();
 
@@ -101,17 +101,13 @@ public class PostEditor extends ActionBarActivity implements LocationListener {
         LocalBroadcastManager.getInstance(this).registerReceiver(intentReceiver,
                 new IntentFilter(TAG));
 
-		// Acquire a reference to the system Location Manager
-		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
-		// Define a listener that responds to location updates
-		LocationListener locationListener = this;
-
-		// Register the listener with the Location Manager to receive location updates
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-
 		LocalBroadcastManager.getInstance(this).registerReceiver(intentReceiver,
-                new IntentFilter(trojannowIntents.temperature));
+				new IntentFilter(trojannowIntents.temperature));
+
+		// immediately request for location
+		Intent intent = new Intent(this, tnSensorManager.class);
+		intent.putExtra(Method.methodKey, Method.getCityFromGPS);
+		startService(intent);
     }
 
     @Override
@@ -155,6 +151,11 @@ public class PostEditor extends ActionBarActivity implements LocationListener {
                     }
 					case Method.getCityFromGPS: {
 						String jsonString = intent.getStringExtra(Method.resultKey);
+
+						Log.e(TAG, jsonString);
+
+						//latitude = intent.getDoubleExtra(Method.latitudeKey, 0);
+						//longitude = intent.getDoubleExtra(Method.longitudeKey, 0);
 						handleGetCityFromGPS(jsonString);
 						break;
 					}
@@ -371,31 +372,4 @@ public class PostEditor extends ActionBarActivity implements LocationListener {
         }
 
     }
-
-	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-
-	}
-
-	@Override
-	public void onProviderEnabled(String provider) {
-
-	}
-
-	@Override
-	public void onProviderDisabled(String provider) {
-
-	}
-
-	@Override
-	public void onLocationChanged(Location location) {
-		this.latitude = location.getLatitude();
-		this.longitude = location.getLongitude();
-
-		Intent intent = new Intent(this, NetworkManager.class);
-		intent.putExtra(Method.methodKey, Method.getCityFromGPS);
-		intent.putExtra(Method.latitudeKey, this.latitude);
-		intent.putExtra(Method.longitudeKey, this.longitude);
-		startService(intent);
-	}
 }
