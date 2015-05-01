@@ -62,7 +62,10 @@ public class ProfileEditor extends ActionBarActivity {
                     EditText eGradYear = (EditText) findViewById(R.id.edit_gradyr);
                     eGradYear.setText(String.valueOf(pGradYear), TextView.BufferType.EDITABLE);
                     EditText eAbout = (EditText) findViewById(R.id.edit_about);
-                    eAbout.setText(pAbout, TextView.BufferType.EDITABLE);
+
+					if(pAbout.trim().length() > 0) {
+						eAbout.setText(pAbout, TextView.BufferType.EDITABLE);
+					}
 
                     break;
                 }
@@ -117,12 +120,13 @@ public class ProfileEditor extends ActionBarActivity {
         intent.putExtra(Profile.age, eAge.getText().toString());
         intent.putExtra(Profile.school, eSchool.getText().toString());
         intent.putExtra(Profile.gradYear, eGradYear.getText().toString());
-        intent.putExtra(Profile.about, eAbout.getText().toString());
+        intent.putExtra(Profile.about, eAbout.getText().toString().trim());
 
         startService(intent);
 
         intent = new Intent(this, Profile.class);
         intent.putExtra(Method.userIdKey, "active");
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 }

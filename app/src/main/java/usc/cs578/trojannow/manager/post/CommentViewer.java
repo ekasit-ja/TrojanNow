@@ -40,6 +40,7 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
     private static final int spinnerShowTime = 1000;
 
 	private static boolean activityVisible;
+	private static int current_postId = -1;
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected Post post = null;
     protected ArrayList<Comment> comments = null;
@@ -208,6 +209,8 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
                 jObj.getInt("reply_count"),
                 jObj.getInt("user_rating"),
                 jObj.getString("tempt_in_c"));
+
+			current_postId = jObj.getInt("id");
         } catch (JSONException e) {
             Log.e(TAG, "Error parsing JSON object " + e.toString());
         }
@@ -371,4 +374,7 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
 		activityVisible = false;
 	}
 
+	public static int getCurrentPostId() {
+		return current_postId;
+	}
 }

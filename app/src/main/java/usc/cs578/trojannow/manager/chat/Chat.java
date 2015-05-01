@@ -45,6 +45,7 @@ public class Chat extends ActionBarActivity implements AdapterView.OnItemSelecte
     HashMap<Integer, List> chatHistory;
 	private boolean isFromNotification = false;
 	private int from_user_id = -1;
+	private boolean isFirstLine = true;
 
     // handler for callback intent from NetworkManager component
     private BroadcastReceiver intentReceiver = new BroadcastReceiver() {
@@ -108,7 +109,6 @@ public class Chat extends ActionBarActivity implements AdapterView.OnItemSelecte
                     break;
                 }
 				case Method.autoLoadNewMessage: {
-					Log.e("Chat","HERE");
 					getUnreadMessages();
 					break;
 				}
@@ -225,7 +225,13 @@ public class Chat extends ActionBarActivity implements AdapterView.OnItemSelecte
         TextView chatWindow = (TextView) findViewById(R.id.textView);
         final ScrollView scroll = (ScrollView) findViewById(R.id.scrollView);
 
-        chatWindow.append('\n'+message);
+		if(isFirstLine) {
+			chatWindow.append(message);
+			isFirstLine = false;
+		}
+		else {
+			chatWindow.append('\n' + message);
+		}
         scroll.post(new Runnable() {
 			@Override
 			public void run() {
@@ -302,12 +308,16 @@ public class Chat extends ActionBarActivity implements AdapterView.OnItemSelecte
         TextView chatWindow = (TextView) findViewById(R.id.textView);
         chatWindow.setText("");
 
-        String friend = getActiveFriend();
-        int friendId = getFriendByName(friend);
+        //String friend = getActiveFriend();
+        //int friendId = getFriendByName(friend);
+		int friendId = friends.get(position).getId();
+
 
         for (Object message : chatHistory.get(friendId)) {
             addMessage((String) message);
         }
+
+		getUnreadMessages();
     }
 
     @Override

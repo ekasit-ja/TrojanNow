@@ -68,7 +68,8 @@ public class GcmIntentService extends IntentService {
 
 		switch (type) {
 			case Url.got_comment_type: {
-				if(CommentViewer.isActivityVisible()) {
+				int post_id = Integer.parseInt(intent.getStringExtra(Url.postIdKey));
+				if(CommentViewer.isActivityVisible() && CommentViewer.getCurrentPostId() == post_id) {
 					Intent callbackIntent = new Intent(CommentViewer.class.getSimpleName());
 					callbackIntent.putExtra(Method.statusKey, true);
 					callbackIntent.putExtra(Method.methodKey, Method.autoLoadNewComment);
@@ -77,7 +78,6 @@ public class GcmIntentService extends IntentService {
 					LocalBroadcastManager.getInstance(this).sendBroadcast(callbackIntent);
 				}
 				else {
-					int post_id = Integer.parseInt(intent.getStringExtra(Url.postIdKey));
 					String content = "Someone comments your post. Check it out!";
 
 					Intent custom_intent = new Intent(this, PostViewer.class);
@@ -121,8 +121,7 @@ public class GcmIntentService extends IntentService {
 		if (intent != null) {
 			contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 		} else {
-			contentIntent = PendingIntent.getActivity(this, 0,
-					new Intent(this, PostViewer.class), 0);
+			contentIntent = PendingIntent.getActivity(this, 0,new Intent(this, PostViewer.class), 0);
 		}
 
 		// sound for notification

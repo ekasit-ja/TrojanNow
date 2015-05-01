@@ -80,6 +80,7 @@
 
         <activity
             android:name="usc.cs578.trojannow.manager.user.Profile"
+            android:launchMode="singleTask"
             android:label="@string/app_name"
             android:parentActivityName="usc.cs578.trojannow.manager.post.PostViewer" >
         </activity>

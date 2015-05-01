@@ -99,9 +99,9 @@ public class FriendViewerAdapter extends BaseAdapter {
         row.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, Profile.class);
+                Intent intent = new Intent(friendViewer, Profile.class);
                 intent.putExtra(Method.userIdKey, friend.getId());
-                context.startActivity(intent);
+				friendViewer.startActivity(intent);
             }
         });
 
