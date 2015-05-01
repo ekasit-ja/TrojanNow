@@ -104,6 +104,7 @@ public class PostEditor extends ActionBarActivity {
 		// immediately request for location
 		Intent locationIntent = new Intent(this, tnSensorManager.class);
 		locationIntent.putExtra(Method.methodKey, Method.getCityFromGPS);
+		locationIntent.putExtra(Method.callerKey, PostEditor.class.getSimpleName());
 		startService(locationIntent);
 
 		// immediately request for temperature

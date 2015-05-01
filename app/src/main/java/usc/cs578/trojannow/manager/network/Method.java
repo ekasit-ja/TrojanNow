@@ -23,6 +23,7 @@ public class Method {
 	public static final String latitudeKey = "latitude";
 	public static final String longitudeKey = "longitude";
 	public static final String cityNameKey = "cityName";
+	public static final String callerKey = "caller";
 
     public static final String getPostsByLocation = "getPostsByLocation";
     public static final String getPostAndComments = "getPostAndComments";

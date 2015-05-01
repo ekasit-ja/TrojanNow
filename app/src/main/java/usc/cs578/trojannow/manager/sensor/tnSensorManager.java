@@ -70,7 +70,8 @@ public class tnSensorManager extends IntentService {
                     break;
                 }
 				case Method.getCityFromGPS: {
-					getCityNameFromGPS();
+					String caller = intent.getStringExtra(Method.callerKey);
+					getCityNameFromGPS(caller);
 					break;
 				}
             }
@@ -199,7 +200,7 @@ public class tnSensorManager extends IntentService {
         return "";
     }
 
-    public void getCityNameFromGPS() {
+    public void getCityNameFromGPS(String caller) {
 		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 		double latitude = location.getLatitude();
@@ -220,7 +221,7 @@ public class tnSensorManager extends IntentService {
 				catch(JSONException e) {
 					Log.e(TAG, "Error creating JSON object "+e.toString());
 				}
-				Intent callbackIntent = new Intent(PostEditor.class.getSimpleName());
+				Intent callbackIntent = new Intent(caller);
 				callbackIntent.putExtra(Method.statusKey,true);
 				callbackIntent.putExtra(Method.methodKey, Method.getCityFromGPS);
 				callbackIntent.putExtra(Method.resultKey, jObj.toString());

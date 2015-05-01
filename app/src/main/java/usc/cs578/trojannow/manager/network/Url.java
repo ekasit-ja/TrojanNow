@@ -8,7 +8,8 @@ public class Url {
     public static final String POST = "POST";
 
     public static final String host = "http://kanitsr.cloudapp.net/";
-    public static final String getPostsByLocationApi = host + "/trojannow/getPostsByLocation/?location=%s";
+    //public static final String getPostsByLocationApi = host + "/trojannow/getPostsByLocation/?location=%s";
+	public static final String getPostsByLocationApi = host + "/trojannow/getPostsByLocation/?latitude=%s&longitude=%s";
     public static final String getPostAndCommentsApi = host + "/trojannow/getPostAndComments/?postId=%s";
 
     public static final String getFriendsApi = host + "/trojannow/getFriends/";
@@ -28,8 +29,6 @@ public class Url {
     public static final String rateComment = host + "/trojannow/rateComment/";
 
     public static final String updateAndroidRegistrationId = host + "/trojannow/updateAndroidRegistrationId/";
-
-	public static final String getCityFromGPS = "http://maps.googleapis.com/maps/api/geocode/json?language=en&latlng=%s,%s";
 
     public static final String semicolon = ";";
     public static final String postSeparator = "&";

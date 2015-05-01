@@ -68,11 +68,13 @@ public class NetworkManager extends IntentService {
 
             switch (methodName) {
                 case Method.getPostsByLocation: {
-                    // get parameters, set URL, and create callback intent
-                    String location = intent.getExtras().getString(Method.locationKey);
-                    url = String.format(Url.getPostsByLocationApi, Uri.encode(location));
-                    callbackIntent = new Intent(PostViewer.class.getSimpleName());
-                    callbackIntent.putExtra(Method.methodKey, methodName);
+					double latitude = intent.getDoubleExtra(Method.latitudeKey, 0);
+					double longitude = intent.getDoubleExtra(Method.longitudeKey, 0);
+					url = String.format(Url.getPostsByLocationApi,
+							Uri.encode(latitude+""),
+							Uri.encode(longitude+""));
+					callbackIntent = new Intent(PostViewer.class.getSimpleName());
+					callbackIntent.putExtra(Method.methodKey, methodName);
 
                     // send intent back to caller
                     sendIntent(url, callbackIntent, Url.GET, "");
@@ -167,8 +169,11 @@ public class NetworkManager extends IntentService {
                     break;
                 }
                 case Method.refreshPostViewer: {
-                    String location = intent.getExtras().getString(Method.locationKey);
-                    url = String.format(Url.getPostsByLocationApi, Uri.encode(location));
+					double latitude = intent.getDoubleExtra(Method.latitudeKey, 0);
+					double longitude = intent.getDoubleExtra(Method.longitudeKey, 0);
+					url = String.format(Url.getPostsByLocationApi,
+							Uri.encode(latitude+""),
+							Uri.encode(longitude+""));
                     callbackIntent = new Intent(PostViewer.class.getSimpleName());
                     callbackIntent.putExtra(Method.methodKey, methodName);
                     sendIntent(url, callbackIntent, Url.GET, "");

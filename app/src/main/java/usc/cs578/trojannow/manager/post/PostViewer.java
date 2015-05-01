@@ -32,6 +32,7 @@ import usc.cs578.trojannow.manager.chat.Chat;
 import usc.cs578.trojannow.manager.network.Method;
 import usc.cs578.trojannow.manager.network.NetworkManager;
 import usc.cs578.trojannow.manager.network.Url;
+import usc.cs578.trojannow.manager.sensor.tnSensorManager;
 
 /**
  * PURPOSE:
@@ -57,6 +58,8 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
 	protected SharedPreferences sharedPreferences;
 	protected ArrayList<Post> posts = null;
 	protected PostViewerAdapter adapter;
+	protected double latitude;
+	protected double longitude;
 
 	// default variables when users log in
 	protected String DISPLAY_NAME;
@@ -245,6 +248,10 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
 						handleLogout(jsonString);
 						break;
 					}
+					case Method.getCityFromGPS: {
+						handleGetCityFromGPS(jsonString);
+						break;
+					}
                     default: {
                         Log.w(TAG, "receive method switch case default");
                     }
@@ -254,7 +261,7 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
                 Log.e(TAG, "NetworkManager reply status FALSE");
             }
         }
-    };
+	};
 
 	private void handleLogout(String jsonString) {
 		try {
@@ -327,12 +334,30 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
     }
 
     public void requestPostsByLocation() {
-        // request NetworkManager component to get data from server
-        Intent intent = new Intent(this, NetworkManager.class);
-        intent.putExtra(Method.methodKey, Method.getPostsByLocation);
-        intent.putExtra("location", "Los Angeles");
-        startService(intent);
+		// request sensor component to get current location
+		Intent intent = new Intent(this, tnSensorManager.class);
+		intent.putExtra(Method.methodKey, Method.getCityFromGPS);
+		intent.putExtra(Method.callerKey, PostViewer.class.getSimpleName());
+		startService(intent);
     }
+
+	private void handleGetCityFromGPS(String jsonString) {
+		try {
+			JSONObject jObj = new JSONObject(jsonString);
+			if(jObj.getBoolean(Method.statusKey)) {
+				latitude = jObj.getDouble(Method.latitudeKey);
+				longitude = jObj.getDouble(Method.longitudeKey);
+
+				Intent intent = new Intent(this, NetworkManager.class);
+				intent.putExtra(Method.methodKey, Method.getPostsByLocation);
+				intent.putExtra(Method.latitudeKey, latitude);
+				intent.putExtra(Method.longitudeKey, longitude);
+				startService(intent);
+			}
+		} catch(JSONException e) {
+			Log.e(TAG, "Error parsing JSON object "+e.toString());
+		}
+	}
 
     @Override
     public void onFragmentInteraction(Uri uri) {
