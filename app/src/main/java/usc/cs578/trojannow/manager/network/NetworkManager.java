@@ -254,6 +254,17 @@ public class NetworkManager extends IntentService {
 					sendIntent(url, callbackIntent, Url.GET, "");
 					break;
 				}
+				case Method.getCityFromGPS: {
+					String latitude = intent.getDoubleExtra(Method.latitudeKey, 0)+"";
+					String longitude = intent.getDoubleExtra(Method.longitudeKey, 0)+"";
+					url = String.format(Url.getCityFromGPS,
+							Uri.encode(latitude),
+							Uri.encode(longitude));
+					callbackIntent = new Intent(PostEditor.class.getSimpleName());
+					callbackIntent.putExtra(Method.methodKey, methodName);
+					sendIntent(url, callbackIntent, Url.GET, "");
+					break;
+				}
                 case Method.logout: {
 					url = Url.logout;
 					callbackIntent = new Intent(PostViewer.class.getSimpleName());

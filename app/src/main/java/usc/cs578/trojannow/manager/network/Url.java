@@ -29,6 +29,7 @@ public class Url {
 
     public static final String updateAndroidRegistrationId = host + "/trojannow/updateAndroidRegistrationId/";
 
+	public static final String getCityFromGPS = "http://maps.googleapis.com/maps/api/geocode/json?language=en&latlng=%s,%s";
 
     public static final String semicolon = ";";
     public static final String postSeparator = "&";
@@ -41,6 +42,8 @@ public class Url {
     public static final String sessionIdKey = "session_id";
     public static final String postIdKey = "post_id";
     public static final String commentTextKey = "comment_text";
+	public static final String latitudeKey = "latitude";
+	public static final String longitudeKey = "longitude";
 
     public static final String statusKey = "status";
     public static final String errorMsgKey = "error_msg";

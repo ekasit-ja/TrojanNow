@@ -29,23 +29,9 @@ import usc.cs578.trojannow.manager.network.NetworkManager;
 import usc.cs578.trojannow.manager.network.Url;
 import usc.cs578.trojannow.manager.sensor.tnSensorManager;
 
-/**
- * PURPOSE:
- * This class enables the user to write posts and publish them.
- *
- * OPERATION:
- * Once a user submits a post, an Intent is created and broadcast through LocalBroadcastManager.
- * The NetworkManager will listen to such intents and send them to the server.
- *
- * This class will also receive Intents from the SensorManager when a user wants to include sensor data in the
- * post.
- *
- * ARCHITECTURAL MAPPING;
- * This class belongs to the Client Post Manager component in the architectural diagram, and maps directly to
- * the PostEditor class in the class diagram.
- *
+/*
+ * Created by Ekasit_Ja on 19-Apr-15.
  */
-
 public class PostEditor extends ActionBarActivity {
 
     private static final String TAG = PostEditor.class.getSimpleName();
