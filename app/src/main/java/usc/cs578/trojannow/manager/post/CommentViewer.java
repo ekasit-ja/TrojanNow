@@ -39,6 +39,7 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
     private static final String TAG = CommentViewer.class.getSimpleName();
     private static final int spinnerShowTime = 1000;
 
+	private static boolean activityVisible;
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected Post post = null;
     protected ArrayList<Comment> comments = null;
@@ -50,6 +51,7 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.comment_viewer);
+		activityResumed();
         swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_posts_list);
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setColorSchemeResources(R.color.red_viterbi, R.color.yellow_trojan);
@@ -88,12 +90,29 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
             public void afterTextChanged(Editable s) {}
         } );
 
+		// check scroll bottom key
+		customLauncher_flag = getIntent().getBooleanExtra(Method.scrollBottomKey, false);
+		getIntent().removeExtra(Method.scrollBottomKey);
+
         // request post and its comments
         requestPostAndComments();
     }
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		activityResumed();
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		activityPaused();
+	}
+
     @Override
     protected void onDestroy() {
+		activityPaused();
         // Unregister since the activity is about to be closed.
         LocalBroadcastManager.getInstance(this).unregisterReceiver(intentReceiver);
         super.onDestroy();
@@ -109,9 +128,9 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
                 switch (method) {
                     case Method.getPostAndComments: {
                         String jsonString = intent.getStringExtra(Method.resultKey);
-                        Post post = convertToPost(jsonString);
-                        ArrayList<Comment> comments = convertToComments(jsonString);
-                        populateListView(post, comments);
+                        CommentViewer.this.post = convertToPost(jsonString);
+						CommentViewer.this.comments = convertToComments(jsonString);
+                        populateListView();
                         break;
                     }
                     case Method.createComment: {
@@ -132,11 +151,29 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
                     }
                     case Method.refreshCommentViewer: {
                         String jsonString = intent.getStringExtra(Method.resultKey);
-                        Post post = convertToPost(jsonString);
-                        ArrayList<Comment> comments = convertToComments(jsonString);
-                        refreshListView(post, comments);
+                        CommentViewer.this.post = convertToPost(jsonString);
+						CommentViewer.this.comments = convertToComments(jsonString);
+                        refreshListView();
                         break;
                     }
+					case Method.autoLoadNewComment: {
+						// if looking at last comment, auto scroll down for new comment
+						boolean isLookingAtBottom = false;
+						if (listView.getLastVisiblePosition() == (adapter.getCount()-1) &&
+								listView.getChildAt(listView.getChildCount() - 1).getBottom() <= listView.getHeight()) {
+							isLookingAtBottom = true;
+						}
+						
+						customLauncher_flag = true;
+						String jsonString = intent.getStringExtra(Method.newCommentDataKey);
+						comments.add(convertToComment(jsonString));
+						adapter.notifyDataSetChanged();
+
+						if(isLookingAtBottom) {
+							listView.smoothScrollToPosition(adapter.getCount()-1);
+						}
+						break;
+					}
                     default: {
                         Log.w(TAG, "receive method switch case default");
                     }
@@ -149,10 +186,6 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
     };
 
     public void requestPostAndComments() {
-        // check scroll bottom key
-        customLauncher_flag = getIntent().getBooleanExtra(Method.scrollBottomKey, false);
-        getIntent().removeExtra(Method.scrollBottomKey);
-
         // request NetworkManager component to get data from server
         Intent intent = new Intent(this, NetworkManager.class);
         intent.putExtra(Method.methodKey, Method.getPostAndComments);
@@ -189,14 +222,8 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
 
             // construct element of posts
             for(int i=0; i<jArr.length(); i++) {
-                JSONObject jObj = jArr.getJSONObject(i);
-                comments.add( new Comment(
-                    jObj.getInt("id"),
-                    jObj.getInt("post_id"),
-                    jObj.getString("comment_text"),
-                    jObj.getString("comment_timestamp"),
-                    jObj.getInt("comment_score"),
-                    jObj.getInt("user_rating")) );
+                String jString = jArr.getString(i);
+                comments.add( convertToComment(jString) );
             }
 
         } catch (JSONException e) {
@@ -205,12 +232,29 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
         return comments;
     }
 
-    public void populateListView(Post post, ArrayList<Comment> comments) {
+	private Comment convertToComment(String jsonString) {
+		Comment c = null;
+		try {
+			JSONObject jObj = new JSONObject(jsonString);
+			c = new Comment(
+					jObj.getInt("id"),
+					jObj.getInt("post_id"),
+					jObj.getString("comment_text"),
+					jObj.getString("comment_timestamp"),
+					jObj.getInt("comment_score"),
+					jObj.getInt("user_rating"));
+		} catch(JSONException e) {
+			Log.e(TAG, "Error parsing JSON object "+e.toString());
+		}
+		return c;
+	}
+
+    public void populateListView() {
         SharedPreferences sharedPreferences = getSharedPreferences(Method.PREF_NAME, MODE_PRIVATE);
         int tempt_unit = sharedPreferences.getInt(Method.TEMPT_UNITS, Method.FAHRENHEIT);
 
         // create ArrayAdapter to manage data on the view
-        adapter = new CommentViewerAdapter(this, post, comments, tempt_unit);
+        adapter = new CommentViewerAdapter(this, tempt_unit);
 
         // bind the adapter to ListView
         listView = (ListView) findViewById(R.id.listView);
@@ -274,9 +318,7 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
         }
     }
 
-    private void refreshListView(Post post, ArrayList<Comment> comments) {
-        adapter.post = post;
-        adapter.comments = comments;
+    private void refreshListView() {
         adapter.notifyDataSetChanged();
         listView.smoothScrollToPosition(adapter.getCount()-1);
         ((EditText)findViewById(R.id.commenting_text)).setText("");
@@ -316,5 +358,17 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
         intent2.putExtra("location", "Los Angeles");
         startService(intent2);
     }
+
+	public static boolean isActivityVisible() {
+		return activityVisible;
+	}
+
+	public static void activityResumed() {
+		activityVisible = true;
+	}
+
+	public static void activityPaused() {
+		activityVisible = false;
+	}
 
 }

@@ -67,7 +67,7 @@ public class DrawerMenu extends Fragment {
 		return inflater.inflate(R.layout.drawer_menu, container, false);
 	}
 
-	// TODO: Rename method, update argument and hook method into UI event
+	// TODO: Rename method, updateListView argument and hook method into UI event
 	public void onButtonPressed(Uri uri) {
 		if (mListener != null) {
 			mListener.onFragmentInteraction(uri);

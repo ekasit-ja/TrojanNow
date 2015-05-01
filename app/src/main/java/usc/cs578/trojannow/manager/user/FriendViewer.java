@@ -17,10 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 
 import usc.cs578.com.trojannow.R;
@@ -40,6 +36,7 @@ public class FriendViewer extends ActionBarActivity {
     private ListView friendList;
     private ArrayList<Friend> friends;
     private ListView listView;
+	private FriendViewerAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +86,7 @@ public class FriendViewer extends ActionBarActivity {
 
     private void populateListView() {
         // create ArrayAdapter to manage data on the view
-        FriendViewerAdapter adapter = new FriendViewerAdapter(this,friends);
+        adapter = new FriendViewerAdapter(this,friends);
 
         // bind the adapter to ListView
         listView = (ListView) findViewById(R.id.friends_list);
@@ -163,12 +160,6 @@ public class FriendViewer extends ActionBarActivity {
             if(intent.getBooleanExtra(Method.statusKey, false)) {
                 String method = intent.getStringExtra(Method.methodKey);
                 switch (method) {
-                    case Method.getPostsByLocation: {
-                        String jsonString = intent.getStringExtra(Method.resultKey);
-                        /*Post[] posts = convertToPosts(jsonString);
-                        populateListView(posts);*/
-                        break;
-                    }
                     case trojannowIntents.friendsList: {
                         String jsonString = intent.getStringExtra(Method.resultKey);
                         friends = new ArrayList<>();
@@ -186,7 +177,7 @@ public class FriendViewer extends ActionBarActivity {
         }
     };
 
-    public static void restart() {
-        activity.recreate();
+    public void updateListView() {
+		adapter.notifyDataSetChanged();
     }
 }
