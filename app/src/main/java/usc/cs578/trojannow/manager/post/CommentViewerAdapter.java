@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Locale;
 
 import usc.cs578.com.trojannow.R;
@@ -33,32 +32,26 @@ public class CommentViewerAdapter extends BaseAdapter {
     private static final String REPLIES = "replies";
 
     protected CommentViewer commentViewer;
-    private Context context;
-    protected Post post;
-    protected ArrayList<Comment> comments;
     private int TEMPT_UNIT;
 
 
-    public CommentViewerAdapter(CommentViewer commentViewer, Post post, ArrayList<Comment> comments, int TEMPT_UNIT) {
+    public CommentViewerAdapter(CommentViewer commentViewer, int TEMPT_UNIT) {
         this.commentViewer = commentViewer;
-        this.context = commentViewer;
-        this.post = post;
-        this.comments = comments;
         this.TEMPT_UNIT = TEMPT_UNIT;
     }
 
     @Override
     public int getCount() {
-        return comments.size() + 1;
+        return commentViewer.comments.size() + 1;
     }
 
     @Override
     public Object getItem(int position) {
         if(position == 0) {
-            return post;
+            return commentViewer.post;
         }
         else {
-            return comments.get(position-1);
+            return commentViewer.comments.get(position-1);
         }
     }
 
@@ -93,7 +86,7 @@ public class CommentViewerAdapter extends BaseAdapter {
         switch(viewType) {
             case TYPE_POST: {
                 if (row == null) {
-                    LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    LayoutInflater inflater = (LayoutInflater) commentViewer.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     row = inflater.inflate(R.layout.post_in_comment_viewer, parent, false);
                     postHolder = new PostHolder(row);
                     row.setTag(postHolder);
@@ -106,44 +99,44 @@ public class CommentViewerAdapter extends BaseAdapter {
                 }
 
                 // set values of views on a single row of each post in the dashboard
-                if(post.posterName.length() < 1) {
+                if(commentViewer.post.posterName.length() < 1) {
                     // if it is anonymous, remove name and extra info elements
                     postHolder.poster_name.setVisibility(View.GONE);
                 }
                 else {
                     // set visibility to show again in case recycling
                     postHolder.poster_name.setVisibility(View.VISIBLE);
-                    postHolder.poster_name.setText(post.posterName);
+                    postHolder.poster_name.setText(commentViewer.post.posterName);
                 }
 
-                if(post.location.length() < 1) {
+                if(commentViewer.post.location.length() < 1) {
                     postHolder.location.setVisibility(View.GONE);
                 }
                 else {
                     postHolder.location.setVisibility(View.VISIBLE);
-                    postHolder.location.setText(post.location);
+                    postHolder.location.setText(commentViewer.post.location);
                 }
 
                 // manage tempt
 
-                String tempt = post.tempt_in_c;
+                String tempt = commentViewer.post.tempt_in_c;
                 if(tempt.length() > 0) {
                     postHolder.tempt_label.setVisibility(View.VISIBLE);
                     if (TEMPT_UNIT == Method.CELSIUS) {
-                        postHolder.tempt_label.setText(tempt + context.getString(R.string.celsius_suffix));
+                        postHolder.tempt_label.setText(tempt + commentViewer.getString(R.string.celsius_suffix));
                     } else {
                         int t = Integer.parseInt(tempt);
                         t = (t * 9 / 5) + 32;
-                        postHolder.tempt_label.setText(t + context.getString(R.string.fahrenheit_suffix));
+                        postHolder.tempt_label.setText(t + commentViewer.getString(R.string.fahrenheit_suffix));
                     }
                 }
                 else {
                     postHolder.tempt_label.setVisibility(View.GONE);
                 }
 
-                postHolder.post_text.setText(post.postText);
+                postHolder.post_text.setText(commentViewer.post.postText);
                 // calculate elapsed time to show pretty word instead of full time
-                String postTimeText = post.postTimestamp;
+                String postTimeText = commentViewer.post.postTimestamp;
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
                 String elapsedTimeText = "";
                 try {
@@ -157,10 +150,10 @@ public class CommentViewerAdapter extends BaseAdapter {
                 }
                 postHolder.post_timestamp.setText(elapsedTimeText);
 
-                int ratingScore = post.postScore;
+                int ratingScore = commentViewer.post.postScore;
                 postHolder.rating_score.setText(String.valueOf(ratingScore));
 
-                int replyCount = post.replyCount;
+                int replyCount = commentViewer.post.replyCount;
                 postHolder.reply_count.setText(String.valueOf(replyCount));
 
                 if(replyCount == 0) {
@@ -179,7 +172,7 @@ public class CommentViewerAdapter extends BaseAdapter {
                 }
 
                 // manage rating button color
-                int userRating = post.userRating;
+                int userRating = commentViewer.post.userRating;
                 if(userRating == 1) {
                     // plus button selected
                     postHolder.plus_button.setImageResource(R.mipmap.ic_plus_selected);
@@ -199,8 +192,8 @@ public class CommentViewerAdapter extends BaseAdapter {
                 postHolder.plus_button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        int currentScore = post.postScore;
-                        int oldRating = post.userRating;
+                        int currentScore = commentViewer.post.postScore;
+                        int oldRating = commentViewer.post.userRating;
                         int newRating;
                         int scoreChange;
                         if(oldRating == 1) {
@@ -215,17 +208,17 @@ public class CommentViewerAdapter extends BaseAdapter {
                             newRating = 1;
                             scoreChange = 1;
                         }
-                        post.userRating = newRating;
-                        post.postScore = currentScore+scoreChange;
-                        doRate(TYPE_POST, post.id, newRating, currentScore + scoreChange,
+                        commentViewer.post.userRating = newRating;
+                        commentViewer.post.postScore = currentScore+scoreChange;
+                        doRate(TYPE_POST, commentViewer.post.id, newRating, currentScore + scoreChange,
                                 final_postHolder.plus_button, final_postHolder.minus_button, final_postHolder.rating_score);
                     }
                 });
                 postHolder.minus_button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        int currentScore = post.postScore;
-                        int oldRating = post.userRating;
+                        int currentScore = commentViewer.post.postScore;
+                        int oldRating = commentViewer.post.userRating;
                         int newRating;
                         int scoreChange;
                         if(oldRating == -1) {
@@ -240,9 +233,9 @@ public class CommentViewerAdapter extends BaseAdapter {
                             newRating = -1;
                             scoreChange = -1;
                         }
-                        post.userRating = newRating;
-                        post.postScore = currentScore+scoreChange;
-                        doRate(TYPE_POST, post.id, newRating, currentScore + scoreChange,
+                        commentViewer.post.userRating = newRating;
+                        commentViewer.post.postScore = currentScore+scoreChange;
+                        doRate(TYPE_POST, commentViewer.post.id, newRating, currentScore + scoreChange,
                                 final_postHolder.plus_button, final_postHolder.minus_button, final_postHolder.rating_score);
                     }
                 });
@@ -251,7 +244,7 @@ public class CommentViewerAdapter extends BaseAdapter {
             }
             case TYPE_COMMENT: {
                 if (row == null) {
-                    LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    LayoutInflater inflater = (LayoutInflater) commentViewer.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     row = inflater.inflate(R.layout.comment_in_comment_viewer, parent, false);
                     commentHolder = new CommentHolder(row);
                     row.setTag(commentHolder);
@@ -265,9 +258,9 @@ public class CommentViewerAdapter extends BaseAdapter {
 
                 // set values of views on a single row of each post in the dashboard
                 int index = position - 1;
-                commentHolder.commentText.setText(comments.get(index).commentText);
+                commentHolder.commentText.setText(commentViewer.comments.get(index).commentText);
                 // calculate elapsed time to show pretty word instead of full time
-                String postTimeText = comments.get(index).commentTimestamp;
+                String postTimeText = commentViewer.comments.get(index).commentTimestamp;
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
                 String elapsedTimeText = "";
                 try {
@@ -280,9 +273,9 @@ public class CommentViewerAdapter extends BaseAdapter {
                     Log.e(TAG,"Error converting string of post time to date "+e.toString());
                 }
                 commentHolder.commentTimestamp.setText(elapsedTimeText);
-                commentHolder.commentScore.setText(String.valueOf(comments.get(index).commentScore));
+                commentHolder.commentScore.setText(String.valueOf(commentViewer.comments.get(index).commentScore));
 
-                int commentRating = comments.get(index).commentRating;
+                int commentRating = commentViewer.comments.get(index).commentRating;
                 if(commentRating == 1) {
                     commentHolder.plus_button.setImageResource(R.mipmap.ic_plus_selected);
                     commentHolder.minus_button.setImageResource(R.mipmap.ic_minus);
@@ -301,8 +294,8 @@ public class CommentViewerAdapter extends BaseAdapter {
                 commentHolder.plus_button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        int currentScore = comments.get(final_index).commentScore;
-                        int oldRating = comments.get(final_index).commentRating;
+                        int currentScore = commentViewer.comments.get(final_index).commentScore;
+                        int oldRating = commentViewer.comments.get(final_index).commentRating;
                         int newRating;
                         int scoreChange;
                         if(oldRating == 1) {
@@ -317,17 +310,17 @@ public class CommentViewerAdapter extends BaseAdapter {
                             newRating = 1;
                             scoreChange = 1;
                         }
-                        comments.get(final_index).commentRating = newRating;
-                        comments.get(final_index).commentScore = currentScore+scoreChange;
-                        doRate(TYPE_COMMENT, comments.get(final_index).id, newRating, currentScore + scoreChange,
+                        commentViewer.comments.get(final_index).commentRating = newRating;
+                        commentViewer.comments.get(final_index).commentScore = currentScore+scoreChange;
+                        doRate(TYPE_COMMENT, commentViewer.comments.get(final_index).id, newRating, currentScore + scoreChange,
                                 final_commentHolder.plus_button, final_commentHolder.minus_button, final_commentHolder.commentScore);
                     }
                 });
                 commentHolder.minus_button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        int currentScore = comments.get(final_index).commentScore;
-                        int oldRating = comments.get(final_index).commentRating;
+                        int currentScore = commentViewer.comments.get(final_index).commentScore;
+                        int oldRating = commentViewer.comments.get(final_index).commentRating;
                         int newRating;
                         int scoreChange;
                         if(oldRating == -1) {
@@ -342,9 +335,9 @@ public class CommentViewerAdapter extends BaseAdapter {
                             newRating = -1;
                             scoreChange = -1;
                         }
-                        comments.get(final_index).commentRating = newRating;
-                        comments.get(final_index).commentScore = currentScore+scoreChange;
-                        doRate(TYPE_COMMENT, comments.get(final_index).id, newRating, currentScore + scoreChange,
+                        commentViewer.comments.get(final_index).commentRating = newRating;
+                        commentViewer.comments.get(final_index).commentScore = currentScore+scoreChange;
+                        doRate(TYPE_COMMENT, commentViewer.comments.get(final_index).id, newRating, currentScore + scoreChange,
                                 final_commentHolder.plus_button, final_commentHolder.minus_button, final_commentHolder.commentScore);
                     }
                 });
@@ -380,10 +373,10 @@ public class CommentViewerAdapter extends BaseAdapter {
             parameter += Url.newScoreKey + Url.postAssigner + newScore + Url.postSeparator;
 
             // request NetworkManager component to login
-            Intent intent = new Intent(context, NetworkManager.class);
+            Intent intent = new Intent(commentViewer, NetworkManager.class);
             intent.putExtra(Method.methodKey, Method.ratePostFromComment);
             intent.putExtra(Method.parameterKey, parameter);
-            context.startService(intent);
+            commentViewer.startService(intent);
         }
         else {
             score.setText(newScore + "");
@@ -392,10 +385,10 @@ public class CommentViewerAdapter extends BaseAdapter {
             parameter += Url.newScoreKey + Url.postAssigner + newScore + Url.postSeparator;
 
             // request NetworkManager component to login
-            Intent intent = new Intent(context, NetworkManager.class);
+            Intent intent = new Intent(commentViewer, NetworkManager.class);
             intent.putExtra(Method.methodKey, Method.rateComment);
             intent.putExtra(Method.parameterKey, parameter);
-            context.startService(intent);
+            commentViewer.startService(intent);
         }
     }
 

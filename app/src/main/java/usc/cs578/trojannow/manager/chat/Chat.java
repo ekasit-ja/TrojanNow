@@ -5,13 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -25,12 +22,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
 
 import usc.cs578.com.trojannow.R;
 import usc.cs578.trojannow.intents.trojannowIntents;
@@ -38,16 +31,21 @@ import usc.cs578.trojannow.manager.network.Method;
 import usc.cs578.trojannow.manager.network.NetworkManager;
 import usc.cs578.trojannow.manager.network.Url;
 import usc.cs578.trojannow.manager.user.Friend;
-import usc.cs578.trojannow.manager.user.Login;
 
-/**
+/*
  * Created by echo on 4/22/15.
  */
 public class Chat extends ActionBarActivity implements AdapterView.OnItemSelectedListener {
 
+	private static final String TAG = Chat.class.getSimpleName();
+
+	private static boolean activityVisible;
     private ArrayList<Friend> friends;
     //HashMap<Integer, String> friendsList;
     HashMap<Integer, List> chatHistory;
+	private boolean isFromNotification = false;
+	private int from_user_id = -1;
+	private boolean isFirstLine = true;
 
     // handler for callback intent from NetworkManager component
     private BroadcastReceiver intentReceiver = new BroadcastReceiver() {
@@ -71,23 +69,49 @@ public class Chat extends ActionBarActivity implements AdapterView.OnItemSelecte
                 }
                 case trojannowIntents.chatMessages: {
                     String jsonString = intent.getStringExtra("result");
+
                     try {
-                        JSONArray jArr = new JSONArray(jsonString);
+						JSONObject jObj = new JSONObject(jsonString);
+						String from_user = jObj.getString("from_user");
+						String to_user = jObj.getString("to_user");
+						int max_id = -1;
+						int min_id = -1;
+
+                        JSONArray jArr = jObj.getJSONArray("messages");
                         for(int i=0; i<jArr.length(); i++) {
                             JSONObject messageObj = jArr.getJSONObject(i);
                             String friend = getActiveFriend();
                             String message = messageObj.getString("message");
                             int friendId = getFriendByName(friend);
 
+							// determine boundary of message id that is being read
+							int msg_id = messageObj.getInt("id");
+							if(msg_id >= max_id) max_id = msg_id;
+							if(msg_id <= min_id) min_id = msg_id ;
+
                             addMessage(friend+": "+message);
                             chatHistory.get(friendId).add(friend+": "+message);
                         }
+
+						// send mark read to server
+						Intent markReadIntent = new Intent(Chat.this, NetworkManager.class);
+						markReadIntent.putExtra(Method.methodKey, Method.sendHasSeen);
+						markReadIntent.putExtra("from_user",from_user);
+						markReadIntent.putExtra("to_user",to_user);
+						markReadIntent.putExtra("max_id",max_id+"");
+						markReadIntent.putExtra("min_id",min_id+"");
+						startService(markReadIntent);
+
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     break;
                 }
+				case Method.autoLoadNewMessage: {
+					getUnreadMessages();
+					break;
+				}
                 default: {
                     Log.w("Chat", "receive method switch case default");
                 }
@@ -99,6 +123,8 @@ public class Chat extends ActionBarActivity implements AdapterView.OnItemSelecte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat);
+
+		activityResumed();
 
         // initiate and customize toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
@@ -117,6 +143,10 @@ public class Chat extends ActionBarActivity implements AdapterView.OnItemSelecte
                 new IntentFilter(trojannowIntents.friendsList));
         LocalBroadcastManager.getInstance(this).registerReceiver(intentReceiver,
                 new IntentFilter(trojannowIntents.chatMessages));
+		LocalBroadcastManager.getInstance(this).registerReceiver(intentReceiver,
+				new IntentFilter(Method.autoLoadNewMessage));
+		LocalBroadcastManager.getInstance(this).registerReceiver(intentReceiver,
+				new IntentFilter(Method.chatFromNotification));
 
         // Init the spinner event listener
         Spinner spinner = (Spinner) findViewById(R.id.friends_spinner);
@@ -125,10 +155,32 @@ public class Chat extends ActionBarActivity implements AdapterView.OnItemSelecte
         chatHistory = new HashMap<>();
 
         getFriends();
+
+		// check if start activity by notification
+		Intent i = getIntent();
+		int from_user = i.getIntExtra(Method.fromUserKey, -1);
+		if(from_user > -1) {
+			isFromNotification = true;
+			from_user_id = from_user;
+		}
     }
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		activityResumed();
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		activityPaused();
+	}
 
     @Override
     protected void onDestroy() {
+		activityPaused();
+
         // Unregister since the activity is about to be closed.
         LocalBroadcastManager.getInstance(this).unregisterReceiver(intentReceiver);
         super.onDestroy();
@@ -146,14 +198,46 @@ public class Chat extends ActionBarActivity implements AdapterView.OnItemSelecte
                 android.R.layout.simple_spinner_item, names);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
+
+		if(isFromNotification) {
+			int position = -1;
+			for(int i=0; i<friends.size(); i++) {
+				if(friends.get(i).getId() == from_user_id) {
+					position = i;
+					break;
+				}
+			}
+
+			if(position > -1) {
+				spinner.setSelection(position);
+				getUnreadMessages();
+			}
+			else {
+				Log.e(TAG, "got messages from unknown");
+			}
+
+			isFromNotification = false;
+			from_user_id = -1;
+		}
     }
 
     public void addMessage(String message) {
         TextView chatWindow = (TextView) findViewById(R.id.textView);
-        ScrollView scroll = (ScrollView) findViewById(R.id.scrollView);
+        final ScrollView scroll = (ScrollView) findViewById(R.id.scrollView);
 
-        chatWindow.append('\n'+message);
-        scroll.fullScroll(View.FOCUS_DOWN);
+		if(isFirstLine) {
+			chatWindow.append(message);
+			isFirstLine = false;
+		}
+		else {
+			chatWindow.append('\n' + message);
+		}
+        scroll.post(new Runnable() {
+			@Override
+			public void run() {
+				scroll.fullScroll(View.FOCUS_DOWN);
+			}
+		});
     }
 
 
@@ -161,6 +245,7 @@ public class Chat extends ActionBarActivity implements AdapterView.OnItemSelecte
         // Get the message and name of the friend
         EditText editText = (EditText) findViewById(R.id.edit_message);
         String message = editText.getText().toString();
+		editText.setText("");
         Spinner spinner = (Spinner) findViewById(R.id.friends_spinner);
         String friend = spinner.getSelectedItem().toString();
         int friendId = getFriendByName(friend);
@@ -210,7 +295,7 @@ public class Chat extends ActionBarActivity implements AdapterView.OnItemSelecte
         return null;
     }
 
-    public void getUnreadMessages(View view) {
+    public void getUnreadMessages() {
         int fromUser = getFriendByName(getActiveFriend());
         Intent intent = new Intent(this, NetworkManager.class);
         intent.putExtra("method", Method.getUnreadMessages);
@@ -223,16 +308,32 @@ public class Chat extends ActionBarActivity implements AdapterView.OnItemSelecte
         TextView chatWindow = (TextView) findViewById(R.id.textView);
         chatWindow.setText("");
 
-        String friend = getActiveFriend();
-        int friendId = getFriendByName(friend);
+        //String friend = getActiveFriend();
+        //int friendId = getFriendByName(friend);
+		int friendId = friends.get(position).getId();
+
 
         for (Object message : chatHistory.get(friendId)) {
             addMessage((String) message);
         }
+
+		getUnreadMessages();
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
+
+	public static boolean isActivityVisible() {
+		return activityVisible;
+	}
+
+	public static void activityResumed() {
+		activityVisible = true;
+	}
+
+	public static void activityPaused() {
+		activityVisible = false;
+	}
 }

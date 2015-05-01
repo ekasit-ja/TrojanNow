@@ -59,16 +59,51 @@ public class Profile extends ActionBarActivity {
                         e.printStackTrace();
                     }
 
+					String undefined = "undefined";
+
                     TextView tName = (TextView) findViewById(R.id.profile_name);
                     tName.setText(pDisplayName);
-                    TextView tAge = (TextView) findViewById(R.id.profile_age);
-                    tAge.setText(String.valueOf(pAge));
-                    TextView tSchool = (TextView) findViewById(R.id.profile_school);
-                    tSchool.setText(pSchool);
-                    TextView tGradYear = (TextView) findViewById(R.id.profile_gradyear);
-                    tGradYear.setText(String.valueOf(pGradYear));
-                    TextView tAbout = (TextView) findViewById(R.id.profile_about);
-                    tAbout.setText(pAbout);
+
+					TextView tAge = (TextView) findViewById(R.id.profile_age);
+                    if(pAge > 0) {
+						tAge.setText(String.valueOf(pAge));
+						tAge.setTextColor(getResources().getColor(R.color.black));
+					}
+					else {
+						tAge.setText(undefined);
+						tAge.setTextColor(getResources().getColor(R.color.grey));
+					}
+
+					TextView tSchool = (TextView) findViewById(R.id.profile_school);
+					if(pSchool.length() > 0) {
+						tSchool.setText(pSchool);
+						tSchool.setTextColor(getResources().getColor(R.color.black));
+					}
+					else {
+						tSchool.setText(undefined);
+						tSchool.setTextColor(getResources().getColor(R.color.grey));
+					}
+
+					TextView tGradYear = (TextView) findViewById(R.id.profile_gradyear);
+					if(pGradYear > 0) {
+						tGradYear.setText(String.valueOf(pGradYear));
+						tGradYear.setTextColor(getResources().getColor(R.color.black));
+					}
+					else {
+						tGradYear.setText(undefined);
+						tGradYear.setTextColor(getResources().getColor(R.color.grey));
+					}
+
+					TextView tAbout = (TextView) findViewById(R.id.profile_about);
+					if(pAbout.length() > 0) {
+						tAbout.setText(pAbout);
+						findViewById(R.id.label_about).setVisibility(View.VISIBLE);
+						tAbout.setVisibility(View.VISIBLE);
+					}
+					else {
+						findViewById(R.id.label_about).setVisibility(View.GONE);
+						tAbout.setVisibility(View.GONE);
+					}
 
                     break;
                 }
@@ -111,6 +146,15 @@ public class Profile extends ActionBarActivity {
 
         getProfileData(userId);
     }
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		String userId = getIntent().getExtras().get(Method.userIdKey).toString();
+		getProfileData(userId);
+
+		setIntent(intent);
+	}
 
     private void enableEdit(boolean edit) {
         Button editBtn = (Button) findViewById(R.id.profile_edit);

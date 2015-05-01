@@ -28,6 +28,7 @@ import java.util.ArrayList;
 
 import usc.cs578.trojannow.drawer.DrawerMenu;
 import usc.cs578.com.trojannow.R;
+import usc.cs578.trojannow.manager.chat.Chat;
 import usc.cs578.trojannow.manager.network.Method;
 import usc.cs578.trojannow.manager.network.NetworkManager;
 import usc.cs578.trojannow.manager.network.Url;
@@ -115,6 +116,16 @@ public class PostViewer extends ActionBarActivity implements DrawerMenu.OnFragme
                     getIntent().removeExtra(Method.postIdKey);
                     break;
                 }
+				case Method.gotChat: {
+					int from_user = getIntent().getIntExtra(Method.fromUserKey, -1);
+					Intent intent = new Intent(this, Chat.class);
+					intent.putExtra(Method.fromUserKey, from_user);
+					intent.putExtra(Method.scrollBottomKey, true);
+					startActivity(intent);
+					getIntent().removeExtra("from_user");
+					getIntent().removeExtra(Method.scrollBottomKey);
+					break;
+				}
                 default: {
                     Log.w(TAG, "checkFromNotification falls default case");
                 }

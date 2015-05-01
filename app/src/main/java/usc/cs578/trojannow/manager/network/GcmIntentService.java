@@ -9,11 +9,14 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import usc.cs578.com.trojannow.R;
+import usc.cs578.trojannow.manager.chat.Chat;
+import usc.cs578.trojannow.manager.post.CommentViewer;
 import usc.cs578.trojannow.manager.post.PostViewer;
 
 /*
@@ -66,15 +69,42 @@ public class GcmIntentService extends IntentService {
 		switch (type) {
 			case Url.got_comment_type: {
 				int post_id = Integer.parseInt(intent.getStringExtra(Url.postIdKey));
-				String content = "Someone comments your post. Check it out!";
+				if(CommentViewer.isActivityVisible() && CommentViewer.getCurrentPostId() == post_id) {
+					Intent callbackIntent = new Intent(CommentViewer.class.getSimpleName());
+					callbackIntent.putExtra(Method.statusKey, true);
+					callbackIntent.putExtra(Method.methodKey, Method.autoLoadNewComment);
+					String newCommentData = intent.getStringExtra(Url.newCommentDataKey);
+					callbackIntent.putExtra(Method.newCommentDataKey, newCommentData);
+					LocalBroadcastManager.getInstance(this).sendBroadcast(callbackIntent);
+				}
+				else {
+					String content = "Someone comments your post. Check it out!";
 
-				Intent custom_intent = new Intent(this, PostViewer.class);
-				custom_intent.putExtra(Method.fromNotificationKey, true);
-				custom_intent.putExtra(Method.fromNotificationMethodKey, Method.gotComment);
-				custom_intent.putExtra(Method.postIdKey, post_id);
+					Intent custom_intent = new Intent(this, PostViewer.class);
+					custom_intent.putExtra(Method.fromNotificationKey, true);
+					custom_intent.putExtra(Method.fromNotificationMethodKey, Method.gotComment);
+					custom_intent.putExtra(Method.postIdKey, post_id);
 
-				sendNotification(content, custom_intent);
+					sendNotification(content, custom_intent);
+				}
+				break;
+			}
+			case Url.got_chat_message: {
+				if(Chat.isActivityVisible()) {
+					Intent callbackIntent = new Intent(Method.autoLoadNewMessage);
+					LocalBroadcastManager.getInstance(this).sendBroadcast(callbackIntent);
+				}
+				else {
+					int from_user = Integer.parseInt(intent.getStringExtra(Url.fromUserKey));
+					String content = intent.getStringExtra("content");
 
+					Intent custom_intent = new Intent(this, PostViewer.class);
+					custom_intent.putExtra(Method.fromNotificationKey, true);
+					custom_intent.putExtra(Method.fromNotificationMethodKey, Method.gotChat);
+					custom_intent.putExtra(Method.fromUserKey, from_user);
+
+					sendNotification(content, custom_intent);
+				}
 				break;
 			}
 		}
@@ -91,8 +121,7 @@ public class GcmIntentService extends IntentService {
 		if (intent != null) {
 			contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 		} else {
-			contentIntent = PendingIntent.getActivity(this, 0,
-					new Intent(this, PostViewer.class), 0);
+			contentIntent = PendingIntent.getActivity(this, 0,new Intent(this, PostViewer.class), 0);
 		}
 
 		// sound for notification

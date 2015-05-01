@@ -1,46 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relative_layout"
     android:layout_width="match_parent"
     android:layout_height="80dp"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:padding="10dp">
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_gravity="center"
-        android:layout_marginStart="10dp"
+        android:layout_marginEnd="5dp"
         android:contentDescription="@string/friend_default_name"
         android:src="@mipmap/ic_launcher" />
 
     <TextView
         android:id="@+id/friend_name"
-        android:layout_width="wrap_content"
+        android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginStart="10dp"
+        android:layout_toEndOf="@+id/imageView"
+        android:layout_centerVertical="true"
         android:text="@string/friend_default_name"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="140dp"
+        android:layout_height="35dp"
         android:text="Add Friend"
         android:id="@+id/btn_addfriend"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="20dp"
-        android:visibility="gone" />
+        android:layout_centerVertical="true"
+        android:visibility="gone"
+        android:background="@color/red_viterbi"
+        android:textColor="@color/white"
+        android:layout_alignParentEnd="true" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="140dp"
+        android:layout_height="35dp"
         android:text="Remove Friend"
         android:id="@+id/btn_unfriend"
-        android:layout_gravity="center_vertical"
-        android:layout_marginLeft="20dp"
-        android:visibility="gone" />
+        android:layout_centerVertical="true"
+        android:visibility="gone"
+        android:background="@color/highlight_grey"
+        android:layout_alignParentEnd="true"/>
 
-</LinearLayout>
+</RelativeLayout>
