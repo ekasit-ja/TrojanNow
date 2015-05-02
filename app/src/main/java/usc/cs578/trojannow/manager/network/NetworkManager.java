@@ -9,18 +9,13 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 
-import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-
-import java.util.ArrayList;
 
 import usc.cs578.trojannow.intents.trojannowIntents;
 import usc.cs578.trojannow.manager.chat.Chat;
 
 import android.os.AsyncTask;
-import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -36,7 +31,6 @@ import usc.cs578.trojannow.manager.post.PostViewer;
 import usc.cs578.trojannow.manager.user.ForgotPassword;
 import usc.cs578.trojannow.manager.user.Login;
 import usc.cs578.trojannow.manager.user.Profile;
-import usc.cs578.trojannow.manager.user.ProfileEditor;
 import usc.cs578.trojannow.manager.user.Register;
 
 /**
@@ -74,11 +68,13 @@ public class NetworkManager extends IntentService {
 
             switch (methodName) {
                 case Method.getPostsByLocation: {
-                    // get parameters, set URL, and create callback intent
-                    String location = intent.getExtras().getString(Method.locationKey);
-                    url = String.format(Url.getPostsByLocationApi, Uri.encode(location));
-                    callbackIntent = new Intent(PostViewer.class.getSimpleName());
-                    callbackIntent.putExtra(Method.methodKey, methodName);
+					double latitude = intent.getDoubleExtra(Method.latitudeKey, 0);
+					double longitude = intent.getDoubleExtra(Method.longitudeKey, 0);
+					url = String.format(Url.getPostsByLocationApi,
+							Uri.encode(latitude+""),
+							Uri.encode(longitude+""));
+					callbackIntent = new Intent(PostViewer.class.getSimpleName());
+					callbackIntent.putExtra(Method.methodKey, methodName);
 
                     // send intent back to caller
                     sendIntent(url, callbackIntent, Url.GET, "");
@@ -173,8 +169,11 @@ public class NetworkManager extends IntentService {
                     break;
                 }
                 case Method.refreshPostViewer: {
-                    String location = intent.getExtras().getString(Method.locationKey);
-                    url = String.format(Url.getPostsByLocationApi, Uri.encode(location));
+					double latitude = intent.getDoubleExtra(Method.latitudeKey, 0);
+					double longitude = intent.getDoubleExtra(Method.longitudeKey, 0);
+					url = String.format(Url.getPostsByLocationApi,
+							Uri.encode(latitude+""),
+							Uri.encode(longitude+""));
                     callbackIntent = new Intent(PostViewer.class.getSimpleName());
                     callbackIntent.putExtra(Method.methodKey, methodName);
                     sendIntent(url, callbackIntent, Url.GET, "");
@@ -251,17 +250,6 @@ public class NetworkManager extends IntentService {
 							Uri.encode(max_id),
 							Uri.encode(min_id));
 					callbackIntent = new Intent(Chat.class.getSimpleName());
-					sendIntent(url, callbackIntent, Url.GET, "");
-					break;
-				}
-				case Method.getCityFromGPS: {
-					String latitude = intent.getDoubleExtra(Method.latitudeKey, 0)+"";
-					String longitude = intent.getDoubleExtra(Method.longitudeKey, 0)+"";
-					url = String.format(Url.getCityFromGPS,
-							Uri.encode(latitude),
-							Uri.encode(longitude));
-					callbackIntent = new Intent(PostEditor.class.getSimpleName());
-					callbackIntent.putExtra(Method.methodKey, methodName);
 					sendIntent(url, callbackIntent, Url.GET, "");
 					break;
 				}

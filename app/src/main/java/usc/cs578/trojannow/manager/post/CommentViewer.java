@@ -30,6 +30,7 @@ import usc.cs578.com.trojannow.R;
 import usc.cs578.trojannow.manager.network.Method;
 import usc.cs578.trojannow.manager.network.NetworkManager;
 import usc.cs578.trojannow.manager.network.Url;
+import usc.cs578.trojannow.manager.sensor.tnSensorManager;
 
 /*
  * Created by Ekasit_Ja on 14-Apr-15.
@@ -175,6 +176,11 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
 						}
 						break;
 					}
+					case Method.getCityFromGPS: {
+						String jsonString = intent.getStringExtra(Method.resultKey);
+						handleGetCityFromGPS(jsonString);
+						break;
+					}
                     default: {
                         Log.w(TAG, "receive method switch case default");
                     }
@@ -184,7 +190,7 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
                 Log.e(TAG, "NetworkManager reply status FALSE");
             }
         }
-    };
+	};
 
     public void requestPostAndComments() {
         // request NetworkManager component to get data from server
@@ -286,7 +292,9 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
     }
 
     public void createComment(View v) {
-        String commenting_text = ((TextView)findViewById(R.id.commenting_text)).getText().toString();
+		EditText et = (EditText) findViewById(R.id.commenting_text);
+        String commenting_text = et.getText().toString();
+		et.setText("");
 
         String postParameter = Url.postIdKey+Url.postAssigner+post.id+Url.postSeparator;
         postParameter += Url.commentTextKey+Url.postAssigner+commenting_text+Url.postSeparator;
@@ -356,11 +364,29 @@ public class CommentViewer extends ActionBarActivity implements SwipeRefreshLayo
     }
 
     protected void requestPostViewerRefresh() {
-        Intent intent2 = new Intent(this, NetworkManager.class);
-        intent2.putExtra(Method.methodKey, Method.refreshPostViewer);
-        intent2.putExtra("location", "Los Angeles");
-        startService(intent2);
+		Intent intent = new Intent(this, tnSensorManager.class);
+		intent.putExtra(Method.methodKey, Method.getCityFromGPS);
+		intent.putExtra(Method.callerKey, CommentViewer.class.getSimpleName());
+		startService(intent);
     }
+
+	private void handleGetCityFromGPS(String jsonString) {
+		try {
+			JSONObject jObj = new JSONObject(jsonString);
+			if(jObj.getBoolean(Method.statusKey)) {
+				double latitude = jObj.getDouble(Method.latitudeKey);
+				double longitude = jObj.getDouble(Method.longitudeKey);
+
+				Intent intent = new Intent(this, NetworkManager.class);
+				intent.putExtra(Method.methodKey, Method.refreshPostViewer);
+				intent.putExtra(Method.latitudeKey, latitude);
+				intent.putExtra(Method.longitudeKey, longitude);
+				startService(intent);
+			}
+		} catch(JSONException e) {
+			Log.e(TAG, "Error parsing JSON object "+e.toString());
+		}
+	}
 
 	public static boolean isActivityVisible() {
 		return activityVisible;
