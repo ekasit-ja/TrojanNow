@@ -13,7 +13,24 @@
             $gradyear = $_POST['gradyear'];
             $about = $_POST['about'];
             
-            $sql = $db->prepare('update profile set age=?, school=?, grad_year=?, about=? where user_id = ?');
-            $sql->bind_param('ssssi', $age,$school,$gradyear,$about,$user_id);
+			$sql = $db->prepare('select 1 from profile where user_id = ?');
+            $sql->bind_param('i', $user_id);
             $sql->execute();
+			$result = $sql->get_result();
+			
+			if($result->num_rows > 0) {
+				$sql = $db->prepare('update profile set age=?, school=?, grad_year=?, about=? where user_id = ?');
+				$sql->bind_param('ssssi', $age,$school,$gradyear,$about,$user_id);
+				$sql->execute();
+				mysqli_commit($db);
+			}
+			else {
+				$sql = $db->prepare('insert into profile(age,school,grad_year,about,user_id) value(?,?,?,?,?)');
+				$sql->bind_param('ssssi', $age,$school,$gradyear,$about,$user_id);
+				$sql->execute();
+				mysqli_commit($db);
+			}
+			
+            
         }
+?>
